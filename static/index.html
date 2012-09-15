@@ -2,21 +2,33 @@
 <html>
   <head>
     <title>Fay server</title>
-    <script src="js/jquery.js"></script>
-    <script src="js/jquery.lib.js"></script>
-    <script src="js/fay-server.js"></script>
-    <script type="text/javascript" src="http://localhost:9090/bdo"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="css/fay.css" type="text/css"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/codemirror.css" rel="stylesheet">
+    <link href="css/fay.css" rel="stylesheet">
   </head>
   <body>
-    <div id="wrap">
+    <div>
       <noscript><p>Please enable JavaScript.</p></noscript>
-      <div id="container">
-        <div class="initializing">
-          <p>Initializing…</p>
-        </div>
+      <ul class="nav nav-tabs" id="file-tabs-nav">
+        <li><a href="#home" data-toggle="tab">Home</a></li>
+        <li><a href="#profile" data-toggle="tab">Profile</a></li>
+        <li><a href="#messages" data-toggle="tab">Messages</a></li>
+        <li><a href="#settings" data-toggle="tab">Settings</a></li>
+      </ul>
+      <div class="tab-content" id="file-tabs-content">
+        <div class="tab-pane active" id="home">home</div>
+        <div class="tab-pane" id="profile">profile</div>
+        <div class="tab-pane" id="messages">message</div>
+        <div class="tab-pane" id="settings">settings</div>
       </div>
     </div>
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.lib.js"></script>
+    <script src="js/codemirror.js"></script>
+    <script src="js/haskell.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fay-server.js"></script>
+    <script src="http://localhost:9090/bdo"></script>
   </body>
 </html>

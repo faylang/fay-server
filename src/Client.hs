@@ -9,13 +9,10 @@
 
 module Client where
 
-import Client.API
-import SharedTypes
-
+import Language.Fay.CodeMirror
+import Language.Fay.DOM
 import Language.Fay.JQuery
-import Language.Fay.JQuery.Lib
 import Language.Fay.Prelude
-import Language.Fay.FFI
 import Language.Fay.ReactiveMvc
 
 --------------------------------------------------------------------------------
@@ -25,5 +22,15 @@ import Language.Fay.ReactiveMvc
 main :: Fay ()
 main = do
   ready $ do
-    echo "Y"
+    body <- select "body"
+    compileBtn <- newButton "Compile" & appendTo body
+    loadBtn <- newButton "Run" & appendTo body & setAttr "disabled" "disabled"
+    body <- getBody
+    editor <- newCodeMirror body "haskell" "module Hello (foo) where\n\nmain = print 'a'"
+    nav <- select "#file-tabs-nav"
+    li <- select "<li><a data-toggle='tab' href='#start'>start.hs</a></li>" & appendTo nav
+    navc <- select "#file-tabs-content"
+    li <- select "<div class='tab-pane' id='start'>start.hs content</div>" & appendTo navc
     return ()
+
+newButton title = select "<a class='btn'></a>" & setHtml title
