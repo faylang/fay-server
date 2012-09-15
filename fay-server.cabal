@@ -1,0 +1,32 @@
+name:                fay-server
+version:             0.1.0.0
+synopsis:            A web service for compiling Fay code.
+description:         A web service for compiling Fay code.
+homepage:            http://fay-lang.org/
+license:             BSD3
+license-file:        LICENSE
+author:              Chris Done
+maintainer:          chrisdone@gmail.com
+copyright:           2012 Chris Done
+category:            Web
+build-type:          Custom
+cabal-version:       >=1.8
+
+executable fay-server
+  main-is:           Main.hs
+  hs-source-dirs:    src
+  build-depends:     base ==4.5.*,
+                     fay,
+                     snap-server,
+                     snap-core,
+                     utf8-string,
+                     bytestring,
+                     aeson,
+                     mtl
+
+library
+  ghc-options:       -Wall
+  hs-source-dirs:    src
+  exposed-modules:   Client
+  build-depends:     base > 4 && < 5,
+                     fay

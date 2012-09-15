@@ -1,0 +1,1 @@
+cabal-dev/bin/fay --autorun --flatten-apps --include src -p src/Client.hs -o static/js/fay-server.js

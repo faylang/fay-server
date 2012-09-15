@@ -1,0 +1,5 @@
+cd ../fay
+cabal-dev install --force-reinstalls
+cd ../moogle
+touch Setup.hs
+cabal-dev install

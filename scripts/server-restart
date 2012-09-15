@@ -1,0 +1,4 @@
+#!/bin/bash
+killall fay-server -w -q
+dist/build/fay-server/fay-server & disown
+sleep 1

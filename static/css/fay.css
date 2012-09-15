@@ -1,0 +1,77 @@
+body {
+  font-family: sans-serif;
+  background: url('texturetastic_gray.png');
+  color: #547591;
+}
+h1 {
+  font-size: 50px;
+  letter-spacing: 0.1em;
+  color: #547591;
+  text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
+  line-height: 50px;
+}
+h2 {
+  color: #7c8995;
+  font-size: 25px;
+  font-weight: normal;
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#wrap {
+  margin: auto;
+}
+p {
+  font-size: 20px;
+}
+.text-input {
+  border:0;
+  background: inherit;
+  padding: 0.75em;
+  box-shadow: inset 0px 0 3px 3px #ccc, 0 1px 0 0 #eeeeee;
+  min-width: 27em;
+  font-family: sans-serif;
+  color: #555;
+  line-height: 0.5em;
+  font-size: 15px
+}
+textarea.text-input {
+  height: 15em;
+  line-height: 1.5em;
+}
+button {
+  background-color: #eeeeee;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc));
+  background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: -ms-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: -o-linear-gradient(top, #eeeeee, #cccccc);
+  background-image: linear-gradient(top, #eeeeee, #cccccc);
+  border: 1px solid #ccc;
+  border-bottom: 1px solid #bbb;
+  border-radius: 3px;
+  color: #547591;
+  font-weight: bold;
+  line-height: 1.2em;
+  padding: 0.5em 1em;
+  text-align: center;
+  text-shadow: 0 1px 0 #eee;
+}
+button:hover {
+  background-color: #dddddd;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dddddd), color-stop(100%, #bbbbbb));
+  background-image: -webkit-linear-gradient(top, #dddddd, #bbbbbb);
+  background-image: -moz-linear-gradient(top, #dddddd, #bbbbbb);
+  background-image: -ms-linear-gradient(top, #dddddd, #bbbbbb);
+  background-image: -o-linear-gradient(top, #dddddd, #bbbbbb);
+  background-image: linear-gradient(top, #dddddd, #bbbbbb);
+  border: 1px solid #bbb;
+  border-bottom: 1px solid #999;
+  cursor: pointer;
+  text-shadow: 0 1px 0 #ddd; }
+button:active {
+  border: 1px solid #aaa;
+  border-bottom: 1px solid #888;
+  box-shadow: inset 0 0 5px 2px #aaaaaa, 0 1px 0 0 #eeeeee;
+}

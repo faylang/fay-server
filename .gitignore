@@ -1,0 +1,4 @@
+cabal-dev
+dist/
+TAGS
+static/js/fay-server.js
