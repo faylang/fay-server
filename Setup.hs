@@ -55,6 +55,6 @@ buildFay _ _ pkgdesc buildinfo = do
              , configExportBuiltins    = True
              , configDirectoryIncludes = [dir]
              , configPrettyPrint       = True
-             , configAutorun           = True
+             , configTypecheck         = False
              , configHtmlWrapper       = False
              }

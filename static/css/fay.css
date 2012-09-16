@@ -1,2 +1,18 @@
 body {
 }
+.messages-list {
+  list-style-type: none;
+}
+.CodeMirror pre.compile-error {
+  background: #ffecec;
+}
+.CodeMirror pre.compile-warning {
+  background: #FFC;
+}
+pre,code {
+  font-family: ubuntu mono;
+}
+#messages .alert {
+  white-space: pre;
+  font-family: ubuntu mono, monospace;
+}

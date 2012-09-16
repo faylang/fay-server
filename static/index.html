@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <title>Fay server</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -8,19 +8,14 @@
     <link href="css/fay.css" rel="stylesheet">
   </head>
   <body>
-    <div>
+    <div class="container-fluid">
       <noscript><p>Please enable JavaScript.</p></noscript>
-      <ul class="nav nav-tabs" id="file-tabs-nav">
-        <li><a href="#home" data-toggle="tab">Home</a></li>
-        <li><a href="#profile" data-toggle="tab">Profile</a></li>
-        <li><a href="#messages" data-toggle="tab">Messages</a></li>
-        <li><a href="#settings" data-toggle="tab">Settings</a></li>
-      </ul>
-      <div class="tab-content" id="file-tabs-content">
-        <div class="tab-pane active" id="home">home</div>
-        <div class="tab-pane" id="profile">profile</div>
-        <div class="tab-pane" id="messages">message</div>
-        <div class="tab-pane" id="settings">settings</div>
+      <div class="row-fluid">
+        <div class="span6" id="editor"></div>
+        <div class="span6" id="previewer">Here's the preview!</div>
+      </div>
+      <div class="row">
+        <div class="span12" id="messages"> </div>
       </div>
     </div>
     <script src="js/jquery.js"></script>

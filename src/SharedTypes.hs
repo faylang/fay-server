@@ -1,3 +1,4 @@
+{-# OPTIONS -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -17,11 +18,36 @@ data Returns a = Returns
 
 -- | The command list.
 data Command
-  = SaveFile String String (Returns ())
-  | ReadFile String (Returns String)
-  | CheckFile String (Returns (Maybe String))
+  = CheckModule String (Returns CheckResult)
+  | GetModule String (Returns Text)
   deriving (Read,Data,Typeable,Show)
 instance Foreign Command
+
+-- | A check result.
+data CheckResult
+  = CheckOk
+  | CheckError [Msg] String
+  deriving (Read,Data,Typeable,Show)
+instance Foreign CheckResult
+instance Record CheckResult
+
+-- | A msg.
+data Msg
+  = Msg MsgType Double String
+  deriving (Read,Data,Typeable,Show)
+instance Foreign Msg
+instance Record Msg
+
+-- | Message type.
+data MsgType = MsgWarning | MsgError
+  deriving (Read,Data,Typeable,Show,Eq)
+instance Foreign MsgType
+
+-- | Some text.
+data Text = Text String
+  deriving (Read,Data,Typeable,Show,Eq)
+instance Foreign Text
+instance Record Text
 
 -- | A record type.
 class Record a

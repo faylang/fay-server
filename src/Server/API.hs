@@ -6,8 +6,6 @@
 
 module Server.API where
 
-import           Control.Applicative
-import           Control.Monad.Reader
 import           Data.Aeson (encode,decode)
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Lazy.UTF8 as UTF8

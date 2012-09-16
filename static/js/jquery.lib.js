@@ -1,6 +1,6 @@
 /*******************************************************************************
-* Loosely capture live changes on an input and trigger a function for it.
-*/
+ * Loosely capture live changes on an input and trigger a function for it.
+ */
 $.fn.livechange = function(ms,trigger){
   return $(this).each(function(){
     var self = this;
@@ -23,13 +23,13 @@ $.fn.livechange = function(ms,trigger){
 };
 
 /*******************************************************************************
-* Trigger keydown events with the keycode.
-*/
+ * Trigger keydown events with the keycode.
+ */
 $.fn.keycode = function(trigger){
-    return $(this).each(function(){
-        var self = this;
-        $(this).keydown(function(e){
-            trigger.call(this,e.which);
-        });
+  return $(this).each(function(){
+    var self = this;
+    $(this).keydown(function(e){
+      trigger.call(this,e.which);
     });
+  });
 };
