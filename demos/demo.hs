@@ -1,13 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Alert where
+module Start where
 
-import Language.Fay.FFI
 import Language.Fay.Prelude
+import Language.Fay.JQuery
 
 main :: Fay ()
-main = alert "Hello, World!"
-
--- | Alert using window.alert.
-alert :: String -> Fay ()
-alert = ffi "window.alert(%1)"
+main = do
+  ready $ do
+    body <- select "body"
+    setText "Hello, World!" body
+    return ()

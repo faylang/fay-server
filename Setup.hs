@@ -54,7 +54,7 @@ buildFay _ _ pkgdesc buildinfo = do
              , configFlattenApps       = True
              , configExportBuiltins    = True
              , configDirectoryIncludes = [dir]
-             , configPrettyPrint       = True
+             , configPrettyPrint       = False
              , configTypecheck         = False
              , configHtmlWrapper       = False
              }

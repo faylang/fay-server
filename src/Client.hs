@@ -15,6 +15,7 @@ import SharedTypes
 import Language.Fay.CodeMirror
 import Language.Fay.JQuery
 import Language.Fay.Ref
+import Language.Fay.Date
 import Language.Fay.Prelude
 import Language.Fay.ReactiveMvc
 
@@ -29,28 +30,71 @@ main = do
       bodyj <- select "#editor"
       body <- select "#editor" >>= getElement
       mirror <- newCodeMirror body "haskell" contents True
-      msgList <- select "#messages"
       lines_ref <- newRef []
-      let compileModule = do
-            lines <- readRef lines_ref
-            forM_ lines $ \line -> do
-              clearMirrorLineClass mirror line
-            writeRef lines_ref []
-            content <- getMirrorValue mirror
-            call (CheckModule content) $ \result -> do
-              empty msgList
-              case result of
-                CheckOk -> return ()
-                CheckError msgs orig -> do
-                  forM_ msgs $ \(Msg typ line err) -> do
-                    let classname = if typ == MsgWarning
-                                       then "compile-warning"
-                                       else "compile-error"
-                    mline <- setMirrorLineClass mirror (line-1) "" classname
-                    lines <- readRef lines_ref
-                    writeRef lines_ref (mline : lines)
-                    if typ == MsgWarning
-                       then select "<div class='alert alert-block'>*</span>" & setText err & appendTo msgList
-                       else select "<div class='alert alert-error'>*</span>" & setText err & appendTo msgList
-      setMirrorLiveChange mirror 500 compileModule
-      compileModule
+      setMirrorLiveChange mirror (checkModule mirror lines_ref)
+      checkModule mirror lines_ref
+      select "#compile-btn" & onClick (do compileModule mirror; return False)
+      return ()
+
+compileModule :: CodeMirror -> Fay ()
+compileModule mirror = do
+  log "Compiling…"
+  compileBtn <- select "#compile-btn"
+  content <- getMirrorValue mirror
+  call (CompileModule content) $ \result ->
+    case result of
+      CompileOk uid -> do
+        setAttr "disabled" "disabled" compileBtn
+        log $ "Compile OK: " ++ uid
+        frame <- select "iframe"
+        setAttr "src" ("/gen/" ++ uid ++ ".html") frame
+        return ()
+      CompileError output -> do
+        log $ "Compile fail: " ++ output
+        msgList <- select "#messages"
+        empty msgList
+        select "<div class='alert alert-error'>" & appendTo msgList & setText output
+        return ()
+
+-- | Check the current module.
+checkModule :: CodeMirror -> Ref [CodeLine] -> Fay ()
+checkModule mirror lines_ref = do
+  compileBtn <- select "#compile-btn"
+  setAttr "disabled" "disabled" compileBtn
+  log "Checking module…"
+  msgList <- select "#messages"
+  setAttr "disabled" "disabled" compileBtn
+  lines <- readRef lines_ref
+  forM_ lines $ \line -> do
+    clearMirrorLineClass mirror line
+  writeRef lines_ref []
+  content <- getMirrorValue mirror
+  call (CheckModule content) $ \result -> do
+    empty msgList
+    case result of
+      CheckOk uid -> do
+        log $ "Check OK: " ++ uid
+        removeAttr "disabled" compileBtn
+        return ()
+      CheckError msgs orig -> do
+        log $ "Check failed: " ++ orig
+        forM_ msgs $ \(Msg typ line err) -> do
+          let classname = if typ == MsgWarning
+                             then "compile-warning"
+                             else "compile-error"
+          mline <- setMirrorLineClass mirror (line-1) "" classname
+          lines <- readRef lines_ref
+          writeRef lines_ref (mline : lines)
+          let classname = if typ == MsgWarning
+                             then "<div class='alert alert-block'></span>"
+                             else "<div class='alert alert-error'></span>"
+          select classname & setText err & appendTo msgList
+
+-- | Log something.
+log :: String -> Fay ()
+log text = do
+  date <- getCurrentTime
+  entry <- select "<div class='alert alert-info'></div>"
+        & setText (formatDate "yy-MM-d HH:mm:ss" date ++ ": " ++ text)
+  select "#log-tab" & prepend entry
+  return ()

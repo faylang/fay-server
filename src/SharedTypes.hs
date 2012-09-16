@@ -20,16 +20,25 @@ data Returns a = Returns
 data Command
   = CheckModule String (Returns CheckResult)
   | GetModule String (Returns Text)
+  | CompileModule String (Returns CompileResult)
   deriving (Read,Data,Typeable,Show)
 instance Foreign Command
 
 -- | A check result.
 data CheckResult
-  = CheckOk
+  = CheckOk String
   | CheckError [Msg] String
   deriving (Read,Data,Typeable,Show)
 instance Foreign CheckResult
 instance Record CheckResult
+
+-- | A compile result.
+data CompileResult
+  = CompileOk String
+  | CompileError String
+  deriving (Read,Data,Typeable,Show)
+instance Foreign CompileResult
+instance Record CompileResult
 
 -- | A msg.
 data Msg

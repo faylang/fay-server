@@ -15,14 +15,11 @@ getBody = ffi "document['body']"
 
 data Timer
 instance Foreign Timer
+instance Foreign (Maybe Timer)
 
 -- | Set a timer.
-setTimeout :: Double -> Fay () -> Fay Timer
-setTimeout = ffi "window['setTimeout'](%2,%1)"
-
--- | Set a timer.
-setInterval :: Double -> Fay () -> Fay Timer
-setInterval = ffi "window['setInterval'](%2,%1)"
+setTimeout :: Fay () -> Double -> Fay Timer
+setTimeout = ffi "window['setTimeout'](%1,%2)"
 
 -- | Clear a timer.
 clearTimeout :: Timer -> Fay ()

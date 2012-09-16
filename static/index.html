@@ -8,22 +8,55 @@
     <link href="css/fay.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container-fluid">
-      <noscript><p>Please enable JavaScript.</p></noscript>
-      <div class="row-fluid">
-        <div class="span6" id="editor"></div>
-        <div class="span6" id="previewer">Here's the preview!</div>
-      </div>
-      <div class="row">
-        <div class="span12" id="messages"> </div>
+    <div class="navbar navbar-inverse">
+      <div class="navbar-inner">
+        <a class="brand" href="#">Fay</a>
+        <ul class="nav">
+
+        </ul>
       </div>
     </div>
-    <script src="js/jquery.js"></script>
-    <script src="js/jquery.lib.js"></script>
-    <script src="js/codemirror.js"></script>
-    <script src="js/haskell.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/fay-server.js"></script>
-    <script src="http://localhost:9090/bdo"></script>
-  </body>
+    <div class="container-fluid">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#editor-tab" data-toggle="tab">Editor</a></li>
+        <li><a href="#log-tab" data-toggle="tab">Log</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="editor-tab">
+          <div class="row-fluid">
+            <div class="span3" id="navitor">
+              <ul class="nav nav-list">
+                <li class="nav-header">Project Modules</li>
+                <li class="active"><a href="#">Start</a></li>
+                <li class="nav-header">Library Modules</li>
+                <li><a href="#">Language.Fay.Guid</a></li>
+                <li><a href="#">Language.Fay.CodeMirror</a></li>
+                <li><a href="#">Language.Fay.DOM</a></li>
+                <li><a href="#">Language.Fay.JQuery</a></li>
+                <li><a href="#">Language.Fay.ReactiveMvc</a></li>
+                <li><a href="#">Language.Fay.Ref</a></li>
+              </ul>
+            </div>
+            <div class="span5">
+              <a id="compile-btn" class="btn">Compile</a>
+              <div id="editor"></div>
+              <div id="messages"></div>
+            </div>
+            <div class="span4" id="previewer">
+              <div class="well"><iframe></iframe></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane" id="log-tab"></div>
+    </div>
+</div>
+<script src="js/jquery.js"></script>
+<script src="js/jquery.lib.js"></script>
+<script src="js/codemirror.js"></script>
+<script src="js/haskell.js"></script>
+<script src="js/date.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/fay-server.js"></script>
+<script src="http://localhost:9090/bdo"></script>
+</body>
 </html>
