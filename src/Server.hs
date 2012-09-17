@@ -10,6 +10,7 @@ import SharedTypes
 
 import Control.Concurrent
 import Control.Monad.IO
+import Control.Monad
 import Data.Char
 import Data.Default
 import Data.List
@@ -40,6 +41,7 @@ dispatcher cmd =
 
     CheckModule contents r -> r <~ do
       (guid,fpath) <- io $ getTempFile ".hs"
+      io $ deleteSoon fpath
       io $ writeFile fpath contents
       result <- io $ typecheck ["include"] [] fpath
       io $ removeFile fpath
@@ -53,6 +55,8 @@ dispatcher cmd =
       io $ writeFile fpath contents
       let fout = "static/gen" </> guid ++ ".js"
       result <- io $ compileFromToReturningStatus config fpath fout
+      io $ deleteSoon fpath
+      io $ deleteSoon fout
       case result of
         Right _ -> do
           io $ generateFile guid
@@ -67,7 +71,7 @@ dispatcher cmd =
 -- | Generate a HTML file for previewing the generated code.
 generateFile :: String -> IO ()
 generateFile guid = do
-  writeFile ("static/gen/" ++ guid ++ ".html") $ unlines [
+  writeFile fpath $ unlines [
       "<!doctype html>"
     , "<html>"
     , "  <head>"
@@ -79,8 +83,10 @@ generateFile guid = do
     , "  </head>"
     , "  <body><noscript>Please enable JavaScript.</noscript></body>"
     , "</html>"]
+  deleteSoon fpath
 
-  where makeScriptTagSrc :: FilePath -> String
+  where fpath = "static/gen/" ++ guid ++ ".html"
+        makeScriptTagSrc :: FilePath -> String
         makeScriptTagSrc s =
           "<script type=\"text/javascript\" src=\"" ++ s ++ "\"></script>"
         files = [guid ++ ".js"]
@@ -133,3 +139,11 @@ getTempFile ext = do
   dir <- getTemporaryDirectory
   uid <- getUID
   return (show uid,dir </> show uid ++ ext)
+
+-- | Delete the given file soon.
+deleteSoon :: FilePath -> IO ()
+deleteSoon path = do purge; return () where
+  purge = forkIO $ do
+    threadDelay (1000 * 1000 * 5)
+    exists <- doesFileExist path
+    when exists (removeFile path)
