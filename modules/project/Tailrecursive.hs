@@ -11,12 +11,14 @@ module Tailrecursive where
 import           Language.Fay.FFI
 import           Language.Fay.Prelude
 
+main :: Fay ()
 main = do
   benchmark
   benchmark
   benchmark
   benchmark
 
+benchmark :: Fay ()
 benchmark = do
   start <- getSeconds
   printD (sum 1000000 0 :: Double)
@@ -24,6 +26,7 @@ benchmark = do
   printS (show (end-start) ++ "ms")
 
 -- tail recursive
+sum :: Double -> Double -> Double
 sum 0 acc = acc
 sum n acc = sum (n - 1) (acc + n)
 

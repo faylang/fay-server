@@ -26,22 +26,26 @@ import Language.Fay.ReactiveMvc
 main :: Fay ()
 main = do
   ready $ do
-    call ProjectModules $ \(ModuleList modules) -> do
-      pm <- select "#project-modules"
-      forM_ modules $ \m -> do
-        li <- select "<li></li>"
-        a <- select "<a href='#'></a>" & setText m & appendTo li
-          & onClick (do chooseModule m; return True)
-        after li pm
-        return ()
-      call LibraryModules $ \(ModuleList modules) -> do
-        pm <- select "#library-modules"
-        forM_ modules $ \m -> do
-          li <- select "<li></li>"
-          a <- select "<a href='#'></a>" & setText m & appendTo li
-          after li pm
-          return ()
-        chooseModule "Alert"
+    loadModules LibraryModules
+    loadModules ProjectModules
+
+loadModules typ =
+  call typ $ \(ModuleList modules) -> do
+    pm <- select (case typ Returns of
+                   ProjectModules _ -> "#project-modules"
+                   LibraryModules _ -> "#library-modules")
+    forM_ (reverse modules) $ \m -> do
+      li <- select "<li></li>"
+      a <- select "<a href='#'></a>" & setText m & appendTo li
+        & onClick (do chooseModule m; return True)
+      after li pm
+      return ()
+    case typ Returns of
+      LibraryModules _ -> return ()
+      ProjectModules _ ->
+        case modules of
+          (x:xs) -> chooseModule x
+          _      -> return ()
 
 chooseModule m =
   call (GetModule m) $ \result ->
@@ -54,7 +58,6 @@ chooseModule m =
         mirror <- newCodeMirror body "haskell" contents True
         lines_ref <- newRef []
         setMirrorLiveChange mirror (checkModule mirror lines_ref)
-        checkModule mirror lines_ref
         select "#compile-btn" & onClick (do compileModule mirror; return False)
         return ()
 
