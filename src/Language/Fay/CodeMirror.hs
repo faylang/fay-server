@@ -25,6 +25,10 @@ newCodeMirror = ffi "CodeMirror(%1,{mode:%2,value:%3,autofocus:%4,indentWithTabs
 getMirrorValue :: CodeMirror -> Fay String
 getMirrorValue = ffi "%1.getValue()"
 
+-- | Set the current editor content.
+setMirrorValue :: CodeMirror -> String -> Fay ()
+setMirrorValue = ffi "%1.setValue(%2)"
+
 -- | Loosely capture live changes on an input and trigger a function for it.
 setMirrorLiveChange :: CodeMirror -> Fay () -> Fay ()
 setMirrorLiveChange mirror func = do

@@ -26,10 +26,21 @@ import Language.Fay.ReactiveMvc
 main :: Fay ()
 main = do
   ready $ do
-    loadModules LibraryModules
-    loadModules ProjectModules
+    mirror <- makeMirror
+    loadModules mirror LibraryModules
+    loadModules mirror ProjectModules
 
-loadModules typ =
+makeMirror = do
+  bodyj <- select "#editor"
+  empty bodyj
+  body <- select "#editor" >>= getElement
+  mirror <- newCodeMirror body "haskell" "-- Here we go…" True
+  lines_ref <- newRef []
+  setMirrorLiveChange mirror (checkModule mirror lines_ref)
+  select "#compile-btn" & onClick (do compileModule mirror; return False)
+  return mirror
+
+loadModules mirror typ =
   call typ $ \(ModuleList modules) -> do
     pm <- select (case typ Returns of
                    ProjectModules _ -> "#project-modules"
@@ -37,29 +48,21 @@ loadModules typ =
     forM_ (reverse modules) $ \m -> do
       li <- select "<li></li>"
       a <- select "<a href='#'></a>" & setText m & appendTo li
-        & onClick (do chooseModule m; return True)
+        & onClick (do chooseModule mirror m; return True)
       after li pm
       return ()
     case typ Returns of
       LibraryModules _ -> return ()
       ProjectModules _ ->
         case modules of
-          (x:xs) -> chooseModule x
+          (x:xs) -> chooseModule mirror x
           _      -> return ()
 
-chooseModule m =
+chooseModule mirror m =
   call (GetModule m) $ \result ->
     case result of
       NoModule name -> warn $ "No such module: " ++ name
-      LoadedModule contents -> do
-        bodyj <- select "#editor"
-        empty bodyj
-        body <- select "#editor" >>= getElement
-        mirror <- newCodeMirror body "haskell" contents True
-        lines_ref <- newRef []
-        setMirrorLiveChange mirror (checkModule mirror lines_ref)
-        select "#compile-btn" & onClick (do compileModule mirror; return False)
-        return ()
+      LoadedModule contents -> setMirrorValue mirror contents
 
 compileModule :: CodeMirror -> Fay ()
 compileModule mirror = do
