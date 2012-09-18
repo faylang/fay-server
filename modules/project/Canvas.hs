@@ -6,10 +6,11 @@
 -- | A demonstration of Fay using the canvas element to display a
 -- simple effect.
 
-module CanvasWater (main) where
+module CanvasWater where
 
-import           Language.Fay.FFI
-import           Language.Fay.Prelude
+import Language.Fay.FFI
+import Language.Fay.Prelude
+import Language.Fay.JQuery
 
 -- | Main entry point.
 main :: Fay ()
@@ -21,6 +22,8 @@ main = do
 -- | Start the animation.
 start :: Image -> Fay ()
 start img = do
+  body <- select "body"
+  select "<canvas width='230' height='230' id='can'></canvas>" >>= appendTo body
   canvas <- getElementById "can"
   context <- getContext canvas "2d"
   drawImage context img 0 0

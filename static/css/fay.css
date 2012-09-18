@@ -16,6 +16,9 @@ pre,code {
   white-space: pre;
   font-family: ubuntu mono, monospace;
 }
+#previewer {
+  height:100%;
+}
 #previewer iframe {
   width: 100%;
   height: 100%;

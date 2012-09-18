@@ -91,7 +91,6 @@ checkModule mirror lines_ref = do
   setAttr "disabled" "disabled" compileBtn
   log "Checking module…"
   msgList <- select "#messages"
-  setAttr "disabled" "disabled" compileBtn
   lines <- readRef lines_ref
   forM_ lines $ \line -> do
     clearMirrorLineClass mirror line
@@ -106,6 +105,8 @@ checkModule mirror lines_ref = do
         return ()
       CheckError msgs orig -> do
         log $ "Check failed: " ++ orig
+        when (all (\(Msg typ _ _) -> typ == MsgWarning) msgs) $
+          removeAttr "disabled" compileBtn
         forM_ msgs $ \(Msg typ line err) -> do
           let classname = if typ == MsgWarning
                              then "compile-warning"
@@ -128,3 +129,6 @@ log text = do
   return ()
 
 warn = log
+
+all p (x:xs) = if p x then all p xs else False
+all _ [] = True
