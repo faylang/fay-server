@@ -26,15 +26,37 @@ import Language.Fay.ReactiveMvc
 main :: Fay ()
 main = do
   ready $ do
-    call (GetModule "demos/demo.hs") $ \(Text contents) -> do
-      bodyj <- select "#editor"
-      body <- select "#editor" >>= getElement
-      mirror <- newCodeMirror body "haskell" contents True
-      lines_ref <- newRef []
-      setMirrorLiveChange mirror (checkModule mirror lines_ref)
-      checkModule mirror lines_ref
-      select "#compile-btn" & onClick (do compileModule mirror; return False)
-      return ()
+    call ProjectModules $ \(ModuleList modules) -> do
+      pm <- select "#project-modules"
+      forM_ modules $ \m -> do
+        li <- select "<li></li>"
+        a <- select "<a href='#'></a>" & setText m & appendTo li
+          & onClick (do chooseModule m; return True)
+        after li pm
+        return ()
+      call LibraryModules $ \(ModuleList modules) -> do
+        pm <- select "#library-modules"
+        forM_ modules $ \m -> do
+          li <- select "<li></li>"
+          a <- select "<a href='#'></a>" & setText m & appendTo li
+          after li pm
+          return ()
+        chooseModule "Alert"
+
+chooseModule m =
+  call (GetModule m) $ \result ->
+    case result of
+      NoModule name -> warn $ "No such module: " ++ name
+      LoadedModule contents -> do
+        bodyj <- select "#editor"
+        empty bodyj
+        body <- select "#editor" >>= getElement
+        mirror <- newCodeMirror body "haskell" contents True
+        lines_ref <- newRef []
+        setMirrorLiveChange mirror (checkModule mirror lines_ref)
+        checkModule mirror lines_ref
+        select "#compile-btn" & onClick (do compileModule mirror; return False)
+        return ()
 
 compileModule :: CodeMirror -> Fay ()
 compileModule mirror = do
@@ -98,3 +120,5 @@ log text = do
         & setText (formatDate "yy-MM-d HH:mm:ss" date ++ ": " ++ text)
   select "#log-tab" & prepend entry
   return ()
+
+warn = log

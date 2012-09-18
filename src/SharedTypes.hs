@@ -19,7 +19,10 @@ data Returns a = Returns
 -- | The command list.
 data Command
   = CheckModule String (Returns CheckResult)
-  | GetModule String (Returns Text)
+  | GetModule String (Returns ModuleLoad)
+  | LibraryModules (Returns ModuleList)
+  | GlobalModules (Returns ModuleList)
+  | ProjectModules (Returns ModuleList)
   | CompileModule String (Returns CompileResult)
   deriving (Read,Data,Typeable,Show)
 instance Foreign Command
@@ -31,6 +34,14 @@ data CheckResult
   deriving (Read,Data,Typeable,Show)
 instance Foreign CheckResult
 instance Record CheckResult
+
+-- | A check result.
+data ModuleLoad
+  = NoModule String
+  | LoadedModule String
+  deriving (Read,Data,Typeable,Show)
+instance Foreign ModuleLoad
+instance Record ModuleLoad
 
 -- | A compile result.
 data CompileResult
@@ -57,6 +68,12 @@ data Text = Text String
   deriving (Read,Data,Typeable,Show,Eq)
 instance Foreign Text
 instance Record Text
+
+-- | A list of modules.
+data ModuleList = ModuleList [String]
+  deriving (Read,Data,Typeable,Show,Eq)
+instance Foreign ModuleList
+instance Record ModuleList
 
 -- | A record type.
 class Record a

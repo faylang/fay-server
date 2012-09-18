@@ -1,13 +1,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Start where
+module JQuery where
 
-import Language.Fay.Prelude
 import Language.Fay.JQuery
+import Language.Fay.Prelude
 
 main :: Fay ()
-main = do
-  ready $ do
+main =
+  ready $ void $ do
     body <- select "body"
     setText "Hello, World!" body
-    return ()

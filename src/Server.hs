@@ -36,19 +36,32 @@ server = do
 dispatcher :: Command -> Dispatcher
 dispatcher cmd =
   case cmd of
-    GetModule filepath r -> r <~ do
-      fmap Text $ io $ readFile filepath
+
+    LibraryModules r -> r <~ do
+      io $ getModulesIn "library"
+    ProjectModules r -> r <~ do
+      io $ getModulesIn "project"
+    GlobalModules r -> r <~ do
+      io $ getModulesIn "global"
+
+    GetModule mname r -> r <~ do
+      t <- io $ loadModule mname
+      return $ case t of
+        Nothing -> NoModule mname
+        Just x -> LoadedModule x
 
     CheckModule contents r -> r <~ do
       (guid,fpath) <- io $ getTempFile ".hs"
       io $ deleteSoon fpath
-      io $ writeFile fpath contents
-      result <- io $ typecheck ["include"] [] fpath
+      let (skiplines,out) = formatForGhc "JQuery" contents
+      io $ writeFile fpath out
+      dirs <- io getModuleDirs
+      result <- io $ typecheck dirs [] fpath
       io $ removeFile fpath
       return $
         case result of
           Right _ -> CheckOk (show guid)
-          Left orig@(parseMsgs -> msgs) -> CheckError msgs orig
+          Left orig@(parseMsgs skiplines -> msgs) -> CheckError msgs orig
 
     CompileModule contents r -> r <~ do
       (guid,fpath) <- io $ getTempFile ".hs"
@@ -67,6 +80,60 @@ dispatcher cmd =
                      , configDirectoryIncludes = ["include"]
                      , configPrettyPrint = False
                      }
+
+
+getModulesIn :: FilePath -> IO ModuleList
+getModulesIn dir = do
+  fmap (ModuleList . sort . map fileToModule)
+       (getDirectoryItemsRecursive ("modules" </> dir))
+
+getModuleDirs = getDirectoryItems "modules"
+
+getDirectoryItems dir =
+  fmap (map (dir </>) . filter (not . all (=='.')))
+       (getDirectoryContents dir)
+
+getDirectoryItemsRecursive dir = do
+  elems <- fmap (filter (not . all (=='.'))) (getDirectoryContents dir)
+  dirs <- filterM doesDirectoryExist . map (dir </>) $ elems
+  files <- return (filter (not . flip elem dirs . (dir </>)) elems)
+  subdirs <- mapM getDirectoryItemsRecursive dirs
+  return (map (dir </>) files ++ concat subdirs)
+
+-- | Load a module from a module name.
+loadModule :: String -> IO (Maybe String)
+loadModule name = do
+  dirs <- getModuleDirs
+  tries <- mapM try (map (</> moduleToFile name) dirs)
+  return (listToMaybe (catMaybes tries))
+
+  where
+        try fpath = do
+          exists <- doesFileExist fpath
+          if exists
+             then fmap Just (readFile fpath)
+             else return Nothing
+
+fileToModule = go . dropWhile (not . isUpper) where
+  go ('/':cs) = '.' : go cs
+  go ".hs"    = ""
+  go (c:cs)   = c   : go cs
+  go x        = x
+
+-- | Convert a module name to a file name.
+moduleToFile = go where
+  go ('.':cs) = '/' : go cs
+  go (c:cs)   = c   : go cs
+  go []       = ".hs"
+
+-- | Format a Fay module for GHC.
+formatForGhc :: String -> String -> (Int,String)
+formatForGhc name contents =
+  (length ls,unlines ls ++ contents)
+  where ls = []
+             -- ["{-# LANGUAGE NoImplicitPrelude #-}"
+             -- ,"module " ++ name ++ " where"
+             -- ,"import Language.Fay.Prelude"]
 
 -- | Generate a HTML file for previewing the generated code.
 generateFile :: String -> IO ()
@@ -102,17 +169,18 @@ typecheck includeDirs ghcFlags fp = do
     map ("-i" ++) includeDirs ++ ghcFlags) ""
 
 -- | Parse the GHC messages.
-parseMsgs :: String -> [Msg]
-parseMsgs = catMaybes . map parseMsg . splitOn "\n\n"
+parseMsgs :: Int -> String -> [Msg]
+parseMsgs skiplines = catMaybes . map (parseMsg skiplines) . splitOn "\n\n"
 
 -- | Parse a GHC message.
-parseMsg :: String -> Maybe Msg
-parseMsg err = case Msg typ (line err) (dropWarning (message err)) of
-  Msg _ 0 "" -> Nothing
+parseMsg :: Int -> String -> Maybe Msg
+parseMsg skiplines err = case Msg typ (line err) (dropWarning (message err)) of
+  Msg _ n "" | n < 1 -> Nothing
   good -> Just good
 
   where
-    line = fromMaybe 0 . readMay . takeWhile isDigit . drop 1 . dropWhile (/=':')
+    line = subtract (fromIntegral skiplines) . fromMaybe 0 . readMay
+         . takeWhile isDigit . drop 1 . dropWhile (/=':')
     message = intercalate "\n" . filter (not . null) . map dropIndent . lines
             . drop 1 . dropWhile (/=':') . drop 1 . dropWhile (/=':') . drop 1 . dropWhile (/=':')
     dropWarning x | isPrefixOf wprefix x = drop (length wprefix) x
