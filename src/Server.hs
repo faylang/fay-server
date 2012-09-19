@@ -53,7 +53,7 @@ dispatcher cmd =
     CheckModule contents r -> r <~ do
       (guid,fpath) <- io $ getTempFile ".hs"
       io $ deleteSoon fpath
-      let (skiplines,out) = formatForGhc "JQuery" contents
+      let (skiplines,out) = formatForGhc contents
       io $ writeFile fpath out
       dirs <- io getModuleDirs
       result <- io $ typecheck dirs [] fpath
@@ -127,8 +127,8 @@ moduleToFile = go where
   go []       = ".hs"
 
 -- | Format a Fay module for GHC.
-formatForGhc :: String -> String -> (Int,String)
-formatForGhc name contents =
+formatForGhc :: String -> (Int,String)
+formatForGhc contents =
   (length ls,unlines ls ++ contents)
   where ls = []
              -- ["{-# LANGUAGE NoImplicitPrelude #-}"
