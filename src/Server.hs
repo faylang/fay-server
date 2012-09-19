@@ -82,7 +82,9 @@ dispatcher cmd =
         Left out -> return (CompileError (show out))
 
   where config = def { configTypecheck = False
-                     , configDirectoryIncludes = ["include"]
+                     , configDirectoryIncludes = ["modules/library"
+                                                 ,"modules/project"
+                                                 ,"modules/global"]
                      , configPrettyPrint = False
                      }
 
@@ -104,7 +106,7 @@ verify modules source =
         Just ImportDecl{importModule=ModuleName mname,importLoc=SrcLoc{..}} -> Just $
           Msg MsgError
               (fromIntegral srcLine)
-              ("No such Fay module: " ++ mname)
+              ("no such Fay module: " ++ mname)
         Nothing ->
           case exports of
             Just (_:_) -> Just $
