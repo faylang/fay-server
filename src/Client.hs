@@ -51,7 +51,7 @@ loadModules mirror typ =
       a <- select "<a href='#'></a>" & setText m & appendTo li
         & onClick (do findSelector "li" navitor & removeClass "active"
                       addClass "active" li
-                      chooseModule mirror m
+                      chooseModule (typ Returns) mirror m
                       return True)
       when (i == 0) $
         case typ Returns of
@@ -62,15 +62,25 @@ loadModules mirror typ =
     case typ Returns of
       ProjectModules _ ->
         case modules of
-          (x:xs) -> chooseModule mirror x
+          (x:xs) -> chooseModule (typ Returns) mirror x
           _      -> return ()
       _ -> return ()
 
-chooseModule mirror m =
+chooseModule typ mirror m =
   call (GetModule m) $ \result ->
     case result of
       NoModule name -> warn $ "No such module: " ++ name
-      LoadedModule contents -> setMirrorValue mirror contents
+      LoadedModule contents -> do
+        case typ of
+          ProjectModules _ -> do
+            select "#compile-btn" & unhide
+            select "#compile-status" & unhide
+            setReadOnly mirror False
+          _ -> do
+            select "#compile-btn" & hide
+            select "#compile-status" & hide
+            setReadOnly mirror True
+        setMirrorValue mirror contents
 
 compileModule :: CodeMirror -> Fay ()
 compileModule mirror = do

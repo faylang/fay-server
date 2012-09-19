@@ -46,6 +46,10 @@ setMirrorLineClass = ffi "%1['setLineClass'](%2,%3,%4)"
 clearMirrorLineClass :: CodeMirror -> CodeLine -> Fay ()
 clearMirrorLineClass = ffi "%2 && %1['setLineClass'](%2,null,null)"
 
+-- | Set the classes for a line.
+setReadOnly :: CodeMirror -> Bool -> Fay ()
+setReadOnly = ffi "%1['setOption']('readOnly',%2)"
+
 -- | Print using console.log.
 send :: String -> Fay ()
 send = ffi "window['console'] && window['console']['log'](\"%%s\",%1)"
