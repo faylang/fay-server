@@ -94,3 +94,8 @@ pre,code {
     margin-top: 1em;
   }
 }
+@media (max-width: 480px) {
+  body {
+    font-size: 0.8em;
+  }
+}
