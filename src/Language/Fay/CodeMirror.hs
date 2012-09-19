@@ -8,7 +8,6 @@ module Language.Fay.CodeMirror where
 import Language.Fay.Prelude
 import Language.Fay.FFI
 import Language.Fay.DOM
-import Language.Fay.Ref
 
 data CodeMirror
 instance Foreign CodeMirror
@@ -30,22 +29,8 @@ setMirrorValue :: CodeMirror -> String -> Fay ()
 setMirrorValue = ffi "%1.setValue(%2)"
 
 -- | Loosely capture live changes on an input and trigger a function for it.
-setMirrorLiveChange :: CodeMirror -> Fay () -> Fay ()
-setMirrorLiveChange mirror func = do
-  timeout_ref <- newRef Nothing
-  lastvalue_ref <- newRef ""
-  setInterval 500 $ do
-    lastvalue <- readRef lastvalue_ref
-    value <- getMirrorValue mirror
-    writeRef lastvalue_ref value
-    when (lastvalue /= value) $ do
-      mt <- readRef timeout_ref
-      case mt of
-        Just timeout -> clearTimeout timeout
-        Nothing      -> return ()
-      newtimeout <- setTimeout 100 func
-      writeRef timeout_ref (Just newtimeout)
-  return ()
+setMirrorLiveChange :: CodeMirror -> Double -> Double -> Fay () -> Fay ()
+setMirrorLiveChange = ffi "CodeMirrorLiveChange(%1,%2,%3,%4)"
 
 instance Foreign a => Foreign (Maybe a)
 

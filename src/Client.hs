@@ -36,7 +36,7 @@ makeMirror = do
   body <- select "#editor" >>= getElement
   mirror <- newCodeMirror body "haskell" "-- Here we go…" True
   lines_ref <- newRef []
-  setMirrorLiveChange mirror (checkModule mirror lines_ref)
+  setMirrorLiveChange mirror 500 200 (checkModule mirror lines_ref)
   select "#compile-btn" & onClick (do compileModule mirror; return False)
   return mirror
 
