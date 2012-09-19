@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module JSON where
+module Serialize where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude
