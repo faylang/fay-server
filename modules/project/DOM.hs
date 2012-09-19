@@ -3,8 +3,8 @@
 
 module DOM where
 
-import           Language.Fay.FFI
-import           Language.Fay.Prelude
+import Language.Fay.FFI
+import Language.Fay.Prelude
 
 main :: Fay ()
 main = addEventListener "load" printBody False
