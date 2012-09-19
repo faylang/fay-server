@@ -1,0 +1,2 @@
+closure --compilation_level=ADVANCED_OPTIMIZATIONS static/js/fay-server.js > static/js/fay-server.closure.js
+#cp static/js/fay-server.min.js static/js/fay-server.js
