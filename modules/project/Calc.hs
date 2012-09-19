@@ -1,8 +1,4 @@
 -- | Calculator based on http://trelford.com/PitCalculatorApp.htm
---
--- Compile with
--- $ fay -p --html-wrapper --html-js-lib jquery.min.js examples/calc.hs
---
 
 {-# LANGUAGE EmptyDataDecls    #-}
 {-# LANGUAGE NoImplicitPrelude #-}

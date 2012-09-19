@@ -1,4 +1,5 @@
--- Generate Show value.
+-- | Example of using `show' which is based on JSON.stringify. Don't
+-- rely on this kind of serialization.
 
 {-# LANGUAGE NoImplicitPrelude #-}
 
@@ -11,6 +12,7 @@ data Foo = Foo { x :: Double, y :: String, z :: Foo } | Bar
   deriving (Show)
 instance Foreign Foo
 
+main :: Fay ()
 main = print (show (Foo 123 "abc" Bar))
 
 print :: String -> Fay ()

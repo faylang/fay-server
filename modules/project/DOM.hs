@@ -1,3 +1,5 @@
+-- | A simple example of using the fundamental DOM operations.
+
 {-# LANGUAGE EmptyDataDecls    #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
@@ -5,6 +7,7 @@ module DOM where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude
+import Language.Fay.DOM
 
 main :: Fay ()
 main = addEventListener "load" printBody False
@@ -16,10 +19,6 @@ printBody = do
 
 print :: Foreign a => [a] -> Fay ()
 print = ffi "console.log(%1)"
-
-data Element
-instance Foreign Element
-instance Show (Element)
 
 documentGetElements :: String -> Fay [Element]
 documentGetElements = ffi "document.getElementsByTagName(%1)"

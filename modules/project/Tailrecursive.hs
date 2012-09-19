@@ -1,8 +1,7 @@
 -- | A demo to show that a tail-recursive function will not increase
 -- the JavaScript stack.
 --
--- See the ticket about optimizing tail-recursive functions for future
--- work <https://github.com/faylang/fay/issues/19>
+-- More future work for TCO to be done here.
 
 {-# LANGUAGE NoImplicitPrelude #-}
 
@@ -25,7 +24,7 @@ benchmark = do
   end <- getSeconds
   printS (show (end-start) ++ "ms")
 
--- tail recursive
+-- the tail recursive function
 sum :: Double -> Double -> Double
 sum 0 acc = acc
 sum n acc = sum (n - 1) (acc + n)

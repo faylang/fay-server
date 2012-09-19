@@ -1,8 +1,8 @@
-{-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-
 -- | A demonstration of Fay using the canvas element to display a
 -- simple effect.
+
+{-# LANGUAGE EmptyDataDecls    #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Canvas where
 
@@ -21,7 +21,7 @@ main = do
 start :: Image -> Fay ()
 start img = do
   body <- select "body"
-  select "<canvas width='230' height='230' id='can'></canvas>" >>= appendTo body
+  select "<canvas style='background:#fff;border: 1px solid #EEE;border-radius: 5px;' width='230' height='230' id='can'></canvas>" >>= appendTo body
   canvas <- getElementById "can"
   context <- getContext canvas "2d"
   drawImage context img 0 0

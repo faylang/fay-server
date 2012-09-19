@@ -1,3 +1,5 @@
+-- | Some more DOM examples.
+
 {-# LANGUAGE EmptyDataDecls    #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
@@ -5,6 +7,7 @@ module Properties where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude
+import Language.Fay.DOM
 
 main :: Fay ()
 main = addEventListener "load" updateBody False
@@ -43,6 +46,3 @@ thebody = ffi "document.body"
 
 thewindow :: Element
 thewindow = ffi "window"
-
-data Element
-instance Foreign Element

@@ -1,3 +1,5 @@
+-- | A trivial Hello, World! example.
+
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Alert where
@@ -8,6 +10,6 @@ import Language.Fay.Prelude
 main :: Fay ()
 main = alert "Hello, World!"
 
--- | Alert using window.alert.
+-- | Alert using window.alert, this is a trivial example of the FFI.
 alert :: String -> Fay ()
 alert = ffi "window.alert(%1)"
