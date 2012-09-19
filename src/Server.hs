@@ -81,24 +81,26 @@ dispatcher cmd =
                      , configPrettyPrint = False
                      }
 
-
 getModulesIn :: FilePath -> IO ModuleList
-getModulesIn dir = do
+getModulesIn dr = do
   fmap (ModuleList . sort . map fileToModule)
-       (getDirectoryItemsRecursive ("modules" </> dir))
+       (getDirectoryItemsRecursive ("modules" </> dr))
 
+getModuleDirs :: IO [FilePath]
 getModuleDirs = getDirectoryItems "modules"
 
-getDirectoryItems dir =
-  fmap (map (dir </>) . filter (not . all (=='.')))
-       (getDirectoryContents dir)
+getDirectoryItems :: FilePath -> IO [FilePath]
+getDirectoryItems dr =
+  fmap (map (dr </>) . filter (not . all (=='.')))
+       (getDirectoryContents dr)
 
-getDirectoryItemsRecursive dir = do
-  elems <- fmap (filter (not . all (=='.'))) (getDirectoryContents dir)
-  dirs <- filterM doesDirectoryExist . map (dir </>) $ elems
-  files <- return (filter (not . flip elem dirs . (dir </>)) elems)
+getDirectoryItemsRecursive :: FilePath -> IO [FilePath]
+getDirectoryItemsRecursive dr = do
+  elems <- fmap (filter (not . all (=='.'))) (getDirectoryContents dr)
+  dirs <- filterM doesDirectoryExist . map (dr </>) $ elems
+  files <- return (filter (not . flip elem dirs . (dr </>)) elems)
   subdirs <- mapM getDirectoryItemsRecursive dirs
-  return (map (dir </>) files ++ concat subdirs)
+  return (map (dr </>) files ++ concat subdirs)
 
 -- | Load a module from a module name.
 loadModule :: String -> IO (Maybe String)
@@ -114,6 +116,7 @@ loadModule name = do
              then fmap Just (readFile fpath)
              else return Nothing
 
+fileToModule :: [Char] -> [Char]
 fileToModule = go . dropWhile (not . isUpper) where
   go ('/':cs) = '.' : go cs
   go ".hs"    = ""
@@ -121,6 +124,7 @@ fileToModule = go . dropWhile (not . isUpper) where
   go x        = x
 
 -- | Convert a module name to a file name.
+moduleToFile :: [Char] -> [Char]
 moduleToFile = go where
   go ('.':cs) = '/' : go cs
   go (c:cs)   = c   : go cs
@@ -204,14 +208,14 @@ getUID = do
 -- | Get a unique temporary file path with the given extension.
 getTempFile :: String -> IO (String,FilePath)
 getTempFile ext = do
-  dir <- getTemporaryDirectory
+  dr <- getTemporaryDirectory
   uid <- getUID
-  return (show uid,dir </> show uid ++ ext)
+  return (show uid,dr </> show uid ++ ext)
 
 -- | Delete the given file soon.
 deleteSoon :: FilePath -> IO ()
-deleteSoon path = do purge; return () where
+deleteSoon p = do _ <- purge; return () where
   purge = forkIO $ do
     threadDelay (1000 * 1000 * 5)
-    exists <- doesFileExist path
-    when exists (removeFile path)
+    exists <- doesFileExist p
+    when exists (removeFile p)
