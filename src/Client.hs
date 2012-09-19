@@ -76,12 +76,14 @@ compileModule mirror = do
         log $ "Compile OK: " ++ uid
         frame <- select "iframe"
         setAttr "src" ("/gen/" ++ uid ++ ".html") frame
+        select "#compile-status" & setText "Loaded" & setAttr "class" "label label-info"
         return ()
       CompileError output -> do
         log $ "Compile fail: " ++ output
         msgList <- select "#messages"
         empty msgList
         select "<div class='alert alert-error'>" & appendTo msgList & setText output
+        select "#compile-status" & setText "Problem" & setAttr "class" "label label-important"
         return ()
 
 -- | Check the current module.
@@ -102,8 +104,12 @@ checkModule mirror lines_ref = do
       CheckOk uid -> do
         log $ "Check OK: " ++ uid
         removeAttr "disabled" compileBtn
+        select "#compile-status" & setText "OK" & setAttr "class" "label label-success"
         return ()
       CheckError msgs orig -> do
+        if all (\(Msg typ _ _) -> typ == MsgWarning) msgs
+           then select "#compile-status" & setText "OK" & setAttr "class" "label label-warning"
+           else select "#compile-status" & setText "Invalid" & setAttr "class" "label label-important"
         log $ "Check failed: " ++ orig
         when (all (\(Msg typ _ _) -> typ == MsgWarning) msgs) $
           removeAttr "disabled" compileBtn

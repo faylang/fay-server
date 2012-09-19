@@ -202,10 +202,7 @@ moduleToFile = go where
 formatForGhc :: String -> (Int,String)
 formatForGhc contents =
   (length ls,unlines ls ++ contents)
-  where ls = []
-             -- ["{-# LANGUAGE NoImplicitPrelude #-}"
-             -- ,"module " ++ name ++ " where"
-             -- ,"import Language.Fay.Prelude"]
+  where ls = ["{-# OPTIONS -fno-warn-type-defaults -fno-warn-orphans -fno-warn-missing-signatures #-}"]
 
 -- | Generate a HTML file for previewing the generated code.
 generateFile :: String -> IO ()
