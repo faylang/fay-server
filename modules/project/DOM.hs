@@ -1,7 +1,6 @@
 -- | A simple example of using the fundamental DOM operations.
 
 {-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module DOM where
 

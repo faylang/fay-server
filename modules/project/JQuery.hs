@@ -1,7 +1,5 @@
 -- | A trivial example of using JQuery.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module JQuery where
 
 import Language.Fay.Date

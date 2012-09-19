@@ -1,7 +1,5 @@
 -- | Another trivial example, using console.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Console where
 
 import Language.Fay.FFI

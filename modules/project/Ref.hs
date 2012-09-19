@@ -1,7 +1,6 @@
 -- | Mutable references. Basically IORef implemented in JS.
 
 {-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module Ref where
 

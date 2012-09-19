@@ -1,7 +1,6 @@
 -- | Calculator based on http://trelford.com/PitCalculatorApp.htm
 
-{-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE EmptyDataDecls #-}
 
 module Calc where
 

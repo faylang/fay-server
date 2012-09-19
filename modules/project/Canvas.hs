@@ -2,7 +2,6 @@
 -- simple effect.
 
 {-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module Canvas where
 

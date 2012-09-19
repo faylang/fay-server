@@ -1,7 +1,6 @@
 -- | Some more DOM examples.
 
 {-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module Properties where
 

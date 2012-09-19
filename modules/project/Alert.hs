@@ -1,7 +1,5 @@
 -- | A trivial Hello, World! example.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Alert where
 
 import Language.Fay.FFI

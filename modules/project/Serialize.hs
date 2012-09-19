@@ -1,7 +1,5 @@
 -- | JSON serializing stuff.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Serialize where
 
 import Language.Fay.FFI

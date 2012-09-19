@@ -3,8 +3,6 @@
 --
 -- More future work for TCO to be done here.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Tailrecursive where
 
 import Language.Fay.FFI

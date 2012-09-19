@@ -202,7 +202,8 @@ moduleToFile = go where
 formatForGhc :: String -> (Int,String)
 formatForGhc contents =
   (length ls,unlines ls ++ contents)
-  where ls = ["{-# OPTIONS -fno-warn-type-defaults -fno-warn-orphans -fno-warn-missing-signatures #-}"]
+  where ls = ["{-# OPTIONS -fno-warn-type-defaults -fno-warn-orphans -fno-warn-missing-signatures #-}"
+             ,"{-# LANGUAGE NoImplicitPrelude #-}"]
 
 -- | Generate a HTML file for previewing the generated code.
 generateFile :: String -> IO ()

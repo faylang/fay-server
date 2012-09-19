@@ -1,8 +1,6 @@
 -- | Example of using `show' which is based on JSON.stringify. Don't
 -- rely on this kind of serialization.
 
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Data where
 
 import Language.Fay.FFI
