@@ -3,17 +3,17 @@
   <head>
     <title>Fay server</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/codemirror.css" rel="stylesheet">
     <link href="css/fay.css" rel="stylesheet">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
   </head>
   <body>
     <div class="navbar navbar-inverse">
       <div class="navbar-inner">
         <a class="brand" href="#">Fay</a>
-        <ul class="nav">
-
-        </ul>
+        <ul class="nav"></ul>
       </div>
     </div>
     <div class="container-fluid">
@@ -27,19 +27,14 @@
             <div class="span3" id="navitor">
               <ul class="nav nav-list">
                 <li class="nav-header" id="project-modules">Project Modules</li>
-                <!-- <li class="active"><a href="#">Start</a></li> -->
                 <li class="nav-header" id="library-modules">Library Modules</li>
-                <!-- <li><a href="#">Language.Fay.Guid</a></li> -->
-                <!-- <li><a href="#">Language.Fay.CodeMirror</a></li> -->
-                <!-- <li><a href="#">Language.Fay.DOM</a></li> -->
-                <!-- <li><a href="#">Language.Fay.JQuery</a></li> -->
-                <!-- <li><a href="#">Language.Fay.ReactiveMvc</a></li> -->
-                <!-- <li><a href="#">Language.Fay.Ref</a></li> -->
               </ul>
             </div>
-            <div class="span5">
-              <a id="compile-btn" class="btn">Compile</a>
-              <div id="editor"></div>
+            <div class="span5" id="editor-area">
+              <div id="editor-pane" class="well">
+                <a id="compile-btn" class="btn">Compile</a>
+                <div id="editor"></div>
+              </div>
               <div id="messages"></div>
             </div>
             <div class="span4" id="previewer">
@@ -48,16 +43,16 @@
           </div>
         </div>
         <div class="tab-pane" id="log-tab"></div>
+      </div>
     </div>
-</div>
-<script src="js/jquery.js"></script>
-<script src="js/jquery.lib.js"></script>
-<script src="js/codemirror.js"></script>
-<script src="js/codemirror.lib.js"></script>
-<script src="js/haskell.js"></script>
-<script src="js/date.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/fay-server.js"></script>
-<script src="http://localhost:9090/bdo"></script>
-</body>
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.lib.js"></script>
+    <script src="js/codemirror.js"></script>
+    <script src="js/codemirror.lib.js"></script>
+    <script src="js/haskell.js"></script>
+    <script src="js/date.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fay-server.js"></script>
+    <script src="http://localhost:9090/bdo"></script>
+  </body>
 </html>

@@ -1,28 +1,96 @@
+/* Generic styles */
 body {
 }
-.messages-list {
-  list-style-type: none;
+pre,code {
+  font-family: ubuntu mono;
 }
+
+/* Compile messages */
+#messages .alert {
+  white-space: pre;
+  font-family: ubuntu mono, monospace;
+}
+
+/* The editor */
+#compile-btn {
+  margin-bottom: 1em;
+}
+#editor-pane {
+  background: #fff;
+}
+
+/* Code mirror styles */
 .CodeMirror pre.compile-error {
   background: #ffecec;
 }
 .CodeMirror pre.compile-warning {
   background: #FFC;
 }
-pre,code {
-  font-family: ubuntu mono;
-}
-#messages .alert {
-  white-space: pre;
-  font-family: ubuntu mono, monospace;
-}
+
+/* The preview pane */
 #previewer {
   height:100%;
 }
 #previewer iframe {
   width: 100%;
-  height: 100%;
   border: 0;
 }
-#editor {
+
+/* Layouts */
+#navitor {
+  overflow: hidden;
+}
+@media (max-width: 1200px) {
+  #navitor {
+    width: 30%;
+    margin-left: 0;
+  }
+  #editor-area {
+    width: 70%;
+    margin-left: 0;
+  }
+  #previewer {
+    width: 70%;
+    margin-left: 0;
+  }
+}
+@media (max-width: 979px) {
+  #navitor {
+    width: 30%;
+    margin-left: 0;
+  }
+  #editor-area {
+    width: 70%;
+    margin-left: 0;
+  }
+  #previewer {
+    width: 70%;
+    margin-left: 0;
+  }
+}
+@media (max-width: 768px) {
+  #navitor {
+    width: 100%;
+    margin-left: 0;
+  }
+  #navitor li {
+    display: inline-block;
+  }
+  #navitor li + li {
+    margin-right: 1em;
+  }
+  #navitor .nav-header {
+    display:block;
+  }
+  #editor-area {
+    width: 100%;
+    margin-left: 0;
+  }
+  #previewer {
+    width: 100%;
+    margin-left: 0;
+  }
+  #editor-pane {
+    margin-top: 1em;
+  }
 }
