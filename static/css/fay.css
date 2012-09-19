@@ -40,6 +40,15 @@ pre,code {
 #navitor {
   overflow: hidden;
 }
+.Codemirror-scroll {
+  height: 500px;
+}
+#previewer .well {
+  height: 500px;
+}
+#previewer .well iframe {
+  height: 100%;
+}
 @media (max-width: 1200px) {
   #navitor {
     width: 30%;
@@ -92,6 +101,9 @@ pre,code {
   }
   #editor-pane {
     margin-top: 1em;
+  }
+  .Codemirror-scroll {
+    height: 500px;
   }
 }
 @media (max-width: 480px) {
