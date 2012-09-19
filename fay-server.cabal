@@ -30,7 +30,8 @@ library
                      uuid,
                      filepath,
                      directory,
-                     data-default
+                     data-default,
+                     haskell-src-exts
 
 executable fay-server
   ghc-options:       -Wall
@@ -50,4 +51,5 @@ executable fay-server
                      uuid,
                      filepath,
                      directory,
-                     data-default
+                     data-default,
+                     haskell-src-exts

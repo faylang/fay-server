@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -20,6 +22,7 @@ import Data.UUID (UUID)
 import Data.UUID.V1
 import Language.Fay.Compiler
 import Language.Fay.Types
+import Language.Haskell.Exts
 import Safe
 import Snap.Core
 import Snap.Http.Server
@@ -51,17 +54,19 @@ dispatcher cmd =
         Just x -> LoadedModule x
 
     CheckModule contents r -> r <~ do
-      (guid,fpath) <- io $ getTempFile ".hs"
-      io $ deleteSoon fpath
-      let (skiplines,out) = formatForGhc contents
-      io $ writeFile fpath out
-      dirs <- io getModuleDirs
-      result <- io $ typecheck dirs [] fpath
-      io $ removeFile fpath
-      return $
-        case result of
-          Right _ -> CheckOk (show guid)
-          Left orig@(parseMsgs skiplines -> msgs) -> CheckError msgs orig
+      modules <- io $ getAllModules
+      sanitize modules contents $ do
+        (guid,fpath) <- io $ getTempFile ".hs"
+        io $ deleteSoon fpath
+        let (skiplines,out) = formatForGhc contents
+        io $ writeFile fpath out
+        dirs <- io getModuleDirs
+        result <- io $ typecheck dirs [] fpath
+        io $ removeFile fpath
+        return $
+          case result of
+            Right _ -> CheckOk (show guid)
+            Left orig@(parseMsgs skiplines -> msgs) -> CheckError msgs orig
 
     CompileModule contents r -> r <~ do
       (guid,fpath) <- io $ getTempFile ".hs"
@@ -80,6 +85,37 @@ dispatcher cmd =
                      , configDirectoryIncludes = ["include"]
                      , configPrettyPrint = False
                      }
+
+sanitize :: [ModuleName] -> String -> Snap CheckResult -> Snap CheckResult
+sanitize modules x m = do
+  case verify modules x of
+    Nothing -> m
+    Just prob -> return $ CheckError [prob] x
+
+verify :: [ModuleName] -> String -> Maybe Msg
+verify modules source =
+  case parseModule source of
+    ParseOk (Module _ _ pragmas _ exports (filter languageFay -> imports) _) ->
+      case find (not . flip elem modules . importModule) imports of
+        Just ImportDecl{importModule=ModuleName name,importLoc=SrcLoc{..}} -> Just $
+          Msg MsgError
+              (fromIntegral srcLine)
+              ("No such Fay module: " ++ name)
+        Nothing ->
+          Nothing
+    ParseFailed SrcLoc{srcLine} err -> Just $
+      Msg MsgError
+          (fromIntegral srcLine)
+          err
+
+  where languageFay (importModule -> ModuleName x) =
+          not (isPrefixOf "Language.Fay." x)
+
+getAllModules = do
+  ModuleList l <- getModulesIn "library"
+  ModuleList p <- getModulesIn "project"
+  ModuleList g <- getModulesIn "global"
+  return (map ModuleName (l ++ p ++ g))
 
 getModulesIn :: FilePath -> IO ModuleList
 getModulesIn dr = do
