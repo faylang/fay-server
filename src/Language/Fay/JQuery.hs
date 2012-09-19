@@ -107,8 +107,8 @@ select = ffi "window['jQuery'](%1)"
 selectEmpty :: Fay JQuery
 selectEmpty = ffi "window['jQuery']()"
 
-createJQuery :: String -> JQuery -> Fay JQuery
-createJQuery = ffi "window['jQuery'](%1, %2)"
+selectQuery :: String -> JQuery -> Fay JQuery
+selectQuery = ffi "window['jQuery'](%1, %2)"
 
 ready :: Fay () -> Fay ()
 ready = ffi "window['jQuery'](%1)"

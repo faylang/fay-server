@@ -42,21 +42,29 @@ makeMirror = do
 
 loadModules mirror typ =
   call typ $ \(ModuleList modules) -> do
+    navitor <- select "#navitor"
     pm <- select (case typ Returns of
                    ProjectModules _ -> "#project-modules"
                    LibraryModules _ -> "#library-modules")
-    forM_ (reverse modules) $ \m -> do
+    forM_ (reverse (zip [0..] modules)) $ \(i,m) -> do
       li <- select "<li></li>"
       a <- select "<a href='#'></a>" & setText m & appendTo li
-        & onClick (do chooseModule mirror m; return True)
+        & onClick (do findSelector "li" navitor & removeClass "active"
+                      addClass "active" li
+                      chooseModule mirror m
+                      return True)
+      when (i == 0) $
+        case typ Returns of
+          ProjectModules _ -> void $ addClass "active" li
+          _ -> return ()
       after li pm
       return ()
     case typ Returns of
-      LibraryModules _ -> return ()
       ProjectModules _ ->
         case modules of
           (x:xs) -> chooseModule mirror x
           _      -> return ()
+      _ -> return ()
 
 chooseModule mirror m =
   call (GetModule m) $ \result ->
