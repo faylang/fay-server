@@ -95,22 +95,52 @@ sanitize modules x m = do
 verify :: [ModuleName] -> String -> Maybe Msg
 verify modules source =
   case parseModule source of
-    ParseOk (Module _ _ pragmas _ exports (filter languageFay -> imports) _) ->
-      case find (not . flip elem modules . importModule) imports of
-        Just ImportDecl{importModule=ModuleName name,importLoc=SrcLoc{..}} -> Just $
-          Msg MsgError
-              (fromIntegral srcLine)
-              ("No such Fay module: " ++ name)
-        Nothing ->
-          Nothing
     ParseFailed SrcLoc{srcLine} err -> Just $
       Msg MsgError
           (fromIntegral srcLine)
           err
+    ParseOk (Module srcloc _ pragmas _ exports (filter languageFay -> imports) _) ->
+      case find (not . flip elem modules . importModule) imports of
+        Just ImportDecl{importModule=ModuleName mname,importLoc=SrcLoc{..}} -> Just $
+          Msg MsgError
+              (fromIntegral srcLine)
+              ("No such Fay module: " ++ mname)
+        Nothing ->
+          case exports of
+            Just (_:_) -> Just $
+              Msg MsgError
+                  (fromIntegral (srcLine srcloc))
+                  "export specs aren't supported"
+            _ ->
+              case find badPragma pragmas of
+                Just pragma -> Just $
+                  Msg MsgError
+                      (pragmaLine pragma)
+                      ("unsupported pragma " ++ prettyPrint pragma)
+                Nothing -> Nothing
 
   where languageFay (importModule -> ModuleName x) =
           not (isPrefixOf "Language.Fay." x)
+        badPragma p =
+          case p of
+            LanguagePragma _ names -> any (not . flip elem oklanguages) names
+            _ -> True
+        pragmaLine p = fromIntegral $ srcLine $
+          case p of
+            LanguagePragma s _ -> s
+            OptionsPragma s _ _ -> s
+            AnnModulePragma s _ -> s
 
+oklanguages :: [Name]
+oklanguages =
+  ["NoImplicitPrelude"
+  ,"GADTs"
+  ,"EmptyDataDecls"
+  ,"IncoherentInstances"
+  ,"FlexibleInstances"
+  ,"RankNTypes"]
+
+getAllModules :: IO [ModuleName]
 getAllModules = do
   ModuleList l <- getModulesIn "library"
   ModuleList p <- getModulesIn "project"
@@ -140,9 +170,9 @@ getDirectoryItemsRecursive dr = do
 
 -- | Load a module from a module name.
 loadModule :: String -> IO (Maybe String)
-loadModule name = do
+loadModule mname = do
   dirs <- getModuleDirs
-  tries <- mapM try (map (</> moduleToFile name) dirs)
+  tries <- mapM try (map (</> moduleToFile mname) dirs)
   return (listToMaybe (catMaybes tries))
 
   where

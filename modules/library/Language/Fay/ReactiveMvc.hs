@@ -1,9 +1,7 @@
-{-# OPTIONS -fno-warn-orphans #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# OPTIONS -fno-warn-unused-do-bind -fno-warn-type-defaults #-}
 
 -- | The client.
 

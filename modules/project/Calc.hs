@@ -4,11 +4,10 @@
 -- $ fay -p --html-wrapper --html-js-lib jquery.min.js examples/calc.hs
 --
 
-{-# OPTIONS -fno-warn-orphans -fno-warn-type-defaults -fno-warn-unused-do-bind #-}
 {-# LANGUAGE EmptyDataDecls    #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Calc (main) where
+module Calc where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude
