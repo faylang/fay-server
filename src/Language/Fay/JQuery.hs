@@ -333,7 +333,7 @@ first :: JQuery -> Fay JQuery
 first = ffi "%1['first']()"
 
 getElement :: JQuery -> Fay Element
-getElement = ffi "%1.get(0)"
+getElement = ffi "%1['get'](0)"
 
 has :: String -> JQuery -> Fay JQuery
 has = ffi "%2['has'](%1)"

@@ -7,7 +7,7 @@
 
 -- | The client.
 
-module Client where
+module Client (main) where
 
 import Client.API
 import SharedTypes

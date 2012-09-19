@@ -22,11 +22,11 @@ newCodeMirror = ffi "CodeMirror(%1,{mode:%2,value:%3,autofocus:%4,indentWithTabs
 
 -- | Get the current editor content.
 getMirrorValue :: CodeMirror -> Fay String
-getMirrorValue = ffi "%1.getValue()"
+getMirrorValue = ffi "%1['getValue']()"
 
 -- | Set the current editor content.
 setMirrorValue :: CodeMirror -> String -> Fay ()
-setMirrorValue = ffi "%1.setValue(%2)"
+setMirrorValue = ffi "%1['setValue'](%2)"
 
 -- | Loosely capture live changes on an input and trigger a function for it.
 setMirrorLiveChange :: CodeMirror -> Double -> Double -> Fay () -> Fay ()
@@ -40,11 +40,11 @@ instance Foreign CodeLine
 
 -- | Set the classes for a line.
 setMirrorLineClass :: CodeMirror -> Double -> String -> String -> Fay CodeLine
-setMirrorLineClass = ffi "%1.setLineClass(%2,%3,%4)"
+setMirrorLineClass = ffi "%1['setLineClass'](%2,%3,%4)"
 
 -- | Set the classes for a line.
 clearMirrorLineClass :: CodeMirror -> CodeLine -> Fay ()
-clearMirrorLineClass = ffi "%2 && %1.setLineClass(%2,null,null)"
+clearMirrorLineClass = ffi "%2 && %1['setLineClass'](%2,null,null)"
 
 -- | Print using console.log.
 send :: String -> Fay ()
