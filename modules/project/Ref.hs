@@ -5,13 +5,14 @@
 
 module Ref where
 
-import           Language.Fay.FFI
-import           Language.Fay.Prelude
+import Language.Fay.FFI
+import Language.Fay.Prelude
 
 main :: Fay ()
 main = do
   ref <- newRef "Hello, World!"
   x <- readRef ref
+  print x
   writeRef ref "Hai!"
   readRef ref >>= print
 

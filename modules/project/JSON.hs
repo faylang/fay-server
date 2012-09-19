@@ -1,9 +1,9 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Console where
+module JSON where
 
-import           Language.Fay.FFI
-import           Language.Fay.Prelude
+import Language.Fay.FFI
+import Language.Fay.Prelude
 
 data MyData = MyData  { xVar :: Int, yVar :: Int }
 instance Foreign MyData
@@ -14,6 +14,7 @@ myData = MyData { yVar = 3, xVar = 9 }
 myFunction :: MyData -> MyData -> Int
 myFunction a b = (xVar a) + (xVar b)
 
+main :: Fay ()
 main = do
 	jsonSerialized <- toJSON myData
 	jsonDeserialized <- toMyData jsonSerialized

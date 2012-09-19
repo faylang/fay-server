@@ -1,7 +1,7 @@
 {-# LANGUAGE EmptyDataDecls    #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Dom where
+module DOM where
 
 import           Language.Fay.FFI
 import           Language.Fay.Prelude

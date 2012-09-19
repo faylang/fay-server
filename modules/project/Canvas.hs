@@ -1,12 +1,10 @@
--- | Compile with: fay examples/canvaswater.hs
-
 {-# LANGUAGE EmptyDataDecls    #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- | A demonstration of Fay using the canvas element to display a
 -- simple effect.
 
-module CanvasWater where
+module Canvas where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

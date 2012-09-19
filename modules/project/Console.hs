@@ -2,9 +2,10 @@
 
 module Console where
 
-import           Language.Fay.FFI
-import           Language.Fay.Prelude
+import Language.Fay.FFI
+import Language.Fay.Prelude
 
+main :: Fay ()
 main = print "Hello, World!"
 
 -- | Print using console.log.
