@@ -1,7 +1,5 @@
 -- | Mutable references. Basically IORef implemented in JS.
 
-{-# LANGUAGE EmptyDataDecls    #-}
-
 module Ref where
 
 import Language.Fay.FFI
