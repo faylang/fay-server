@@ -280,7 +280,7 @@ generateFile mname guid = do
         makeScriptTagSrc s =
           "<script type=\"text/javascript\" src=\"" ++ s ++ "\"></script>"
         files = [guid ++ ".js"]
-        libs = ["/js/jquery.js","/js/date.js","/js/gen.js"] ++
+        libs = ["/js/jquery.js","/js/date.js","/js/gen.js","/js/jquery.cookie.js"] ++
                ["/js/three.min.js" | mname == "Three"]
 
 -- | Type-check a file.
