@@ -257,7 +257,8 @@ generateFile guid = do
         makeScriptTagSrc s =
           "<script type=\"text/javascript\" src=\"" ++ s ++ "\"></script>"
         files = [guid ++ ".js"]
-        libs = ["/js/jquery.js","/js/date.js","/js/gen.js"]
+        libs = ["/js/jquery.js","/js/date.js","/js/gen.js"
+               ,"/js/three.min.js"]
 
 -- | Type-check a file.
 typecheck :: [FilePath] -> [String] -> String -> IO (Either String (String,String))
