@@ -13,7 +13,7 @@ build-type:          Custom
 cabal-version:       >=1.8
 
 library
-  ghc-options:       -Wall
+  ghc-options:       -Wall -O2
   hs-source-dirs:    src
   exposed-modules:   Client
   build-depends:     base > 4 && < 5,
@@ -34,7 +34,7 @@ library
                      haskell-src-exts
 
 executable fay-server
-  ghc-options:       -Wall
+  ghc-options:       -Wall -O2
   main-is:           Main.hs
   hs-source-dirs:    src
   build-depends:     base ==4.5.*,
