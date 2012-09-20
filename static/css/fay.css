@@ -51,7 +51,7 @@ pre,code {
 }
 @media (max-width: 1200px) {
   #navitor {
-    width: 30%;
+    width: 20%;
     margin-left: 0;
   }
   #editor-area {
@@ -65,7 +65,7 @@ pre,code {
 }
 @media (max-width: 979px) {
   #navitor {
-    width: 30%;
+    width: 20%;
     margin-left: 0;
   }
   #editor-area {
