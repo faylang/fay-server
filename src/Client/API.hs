@@ -20,11 +20,3 @@ ajaxCommand = ffi "jQuery['ajax']({\
                   \ \"dataType\": 'json', \
                   \ \"success\" : %2 \
                   \})"
-
--- | Print using console.log.
-echo :: String -> Fay ()
-echo = ffi "window['console'] && window['console']['log'](\"%%s\",%1)"
-
--- | Print using console.log.
-print :: Foreign a => a -> Fay ()
-print = ffi "window['console'] && window['console']['log'](\"%%o\",%1)"

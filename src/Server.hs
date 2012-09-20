@@ -72,22 +72,25 @@ dispatcher cmd =
       (guid,fpath) <- io $ getTempFile ".hs"
       io $ writeFile fpath contents
       let fout = "static/gen" </> guid ++ ".js"
-      result <- io $ compileFromToReturningStatus config fpath fout
+      result <- io $ compileFromToReturningStatus (config (getImports contents)) fpath fout
       io $ deleteSoon fpath
       io $ deleteSoon fout
       case result of
         Right _ -> do
-          io $ generateFile (fromMaybe "Main" (getModuleName contents)) guid
+          io $ generateFile (getModuleName contents) guid
           return (CompileOk guid)
         Left out -> return (CompileError (showFayError out))
 
-  where config = def { configTypecheck = False
-                     , configDirectoryIncludes = ["modules/library"
-                                                 ,"modules/project"
-                                                 ,"modules/global"]
-                     , configPrettyPrint = False
-                     }
+  where config imports = def
+          { configTypecheck = False
+          , configDirectoryIncludes = ["modules/library"
+                                      ,"modules/project"
+                                      ,"modules/global"
+                                      ,"src"]
+          , configPrettyPrint = False
+          }
 
+showFayError :: CompileError -> String
 showFayError e =
   case e of
     ParseError _ e -> e
@@ -124,12 +127,18 @@ sanitize modules x m = do
     Nothing -> m
     Just prob -> return $ CheckError [prob] x
 
-getModuleName :: String -> Maybe String
+getModuleName :: String -> String
 getModuleName source =
   case parseModule source of
-    ParseFailed SrcLoc{srcLine} err -> Nothing
+    ParseFailed SrcLoc{srcLine} err -> "Main"
     ParseOk (Module _ (ModuleName name) _ _ _ _ _) ->
-      Just name
+      name
+
+getImports :: String -> [ImportDecl]
+getImports source =
+  case parseModule source of
+    ParseFailed SrcLoc{srcLine} err -> []
+    ParseOk (Module _ _ _ _ _ imports _) -> imports
 
 verify :: [ModuleName] -> String -> Maybe Msg
 verify modules source =
@@ -170,6 +179,10 @@ verify modules source =
             OptionsPragma s _ _ -> s
             AnnModulePragma s _ -> s
 
+okmodule (importModule -> ModuleName x) =
+   isPrefixOf "Language.Fay." x ||
+   elem x ["SharedTypes"]
+
 oklanguages :: [Name]
 oklanguages =
   ["NoImplicitPrelude"
@@ -184,7 +197,10 @@ getAllModules = do
   ModuleList l <- getModulesIn "library"
   ModuleList p <- getModulesIn "project"
   ModuleList g <- getModulesIn "global"
-  return (map ModuleName (l ++ p ++ g))
+  return (map ModuleName (l ++ p ++ g ++ allowedInternals))
+
+allowedInternals = ["SharedTypes","Client.API"]
+allowedInternalDirs = ["src"]
 
 getModulesIn :: FilePath -> IO ModuleList
 getModulesIn dr = do
@@ -192,7 +208,9 @@ getModulesIn dr = do
        (getDirectoryItemsRecursive ("modules" </> dr))
 
 getModuleDirs :: IO [FilePath]
-getModuleDirs = getDirectoryItems "modules"
+getModuleDirs = do
+  ms <- getDirectoryItems "modules"
+  return (ms ++ allowedInternalDirs)
 
 getDirectoryItems :: FilePath -> IO [FilePath]
 getDirectoryItems dr =
