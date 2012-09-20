@@ -77,7 +77,7 @@ dispatcher cmd =
       io $ deleteSoon fout
       case result of
         Right _ -> do
-          io $ generateFile guid
+          io $ generateFile (fromMaybe "Main" (getModuleName contents)) guid
           return (CompileOk guid)
         Left out -> return (CompileError (showFayError out))
 
@@ -123,6 +123,13 @@ sanitize modules x m = do
   case verify modules x of
     Nothing -> m
     Just prob -> return $ CheckError [prob] x
+
+getModuleName :: String -> Maybe String
+getModuleName source =
+  case parseModule source of
+    ParseFailed SrcLoc{srcLine} err -> Nothing
+    ParseOk (Module _ (ModuleName name) _ _ _ _ _) ->
+      Just name
 
 verify :: [ModuleName] -> String -> Maybe Msg
 verify modules source =
@@ -236,8 +243,8 @@ formatForGhc contents =
              ,"{-# LANGUAGE NoImplicitPrelude #-}"]
 
 -- | Generate a HTML file for previewing the generated code.
-generateFile :: String -> IO ()
-generateFile guid = do
+generateFile :: String -> String -> IO ()
+generateFile mname guid = do
   writeFile fpath $ unlines [
       "<!doctype html>"
     , "<html>"
@@ -257,8 +264,8 @@ generateFile guid = do
         makeScriptTagSrc s =
           "<script type=\"text/javascript\" src=\"" ++ s ++ "\"></script>"
         files = [guid ++ ".js"]
-        libs = ["/js/jquery.js","/js/date.js","/js/gen.js"
-               ,"/js/three.min.js"]
+        libs = ["/js/jquery.js","/js/date.js","/js/gen.js"] ++
+               ["/js/three.min.js" | mname == "Three"]
 
 -- | Type-check a file.
 typecheck :: [FilePath] -> [String] -> String -> IO (Either String (String,String))
