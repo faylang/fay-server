@@ -18,7 +18,7 @@ newCodeMirror :: Element        -- ^ The parent element.
               -> String         -- ^ The contents.
               -> Bool
               -> Fay CodeMirror -- ^ A new code mirror.
-newCodeMirror = ffi "CodeMirror(%1,{mode:%2,value:%3,autofocus:%4,indentWithTabs:true})"
+newCodeMirror = ffi "CodeMirror(%1,{mode:%2,value:%3,autofocus:%4,indentWithTabs:false,tabSize:4})"
 
 -- | Get the current editor content.
 getMirrorValue :: CodeMirror -> Fay String

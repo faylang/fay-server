@@ -53,7 +53,7 @@ dispatcher cmd =
         Nothing -> NoModule mname
         Just x -> LoadedModule x
 
-    CheckModule contents r -> r <~ do
+    CheckModule (stripTabs -> contents) r -> r <~ do
       modules <- io $ getAllModules
       sanitize modules contents $ do
         (guid,fpath) <- io $ getTempFile ".hs"
@@ -68,7 +68,7 @@ dispatcher cmd =
             Right _ -> CheckOk (show guid)
             Left orig@(parseMsgs skiplines -> msgs) -> CheckError msgs orig
 
-    CompileModule contents r -> r <~ do
+    CompileModule (stripTabs -> contents) r -> r <~ do
       (guid,fpath) <- io $ getTempFile ".hs"
       io $ writeFile fpath contents
       let fout = "static/gen" </> guid ++ ".js"
@@ -87,6 +87,10 @@ dispatcher cmd =
                                                  ,"modules/global"]
                      , configPrettyPrint = False
                      }
+
+stripTabs ('\t':cs) = "    " ++ stripTabs cs
+stripTabs (c:cs) = c : stripTabs cs
+stripTabs [] = []
 
 sanitize :: [ModuleName] -> String -> Snap CheckResult -> Snap CheckResult
 sanitize modules x m = do
