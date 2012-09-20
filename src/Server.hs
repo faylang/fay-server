@@ -46,6 +46,8 @@ dispatcher cmd =
       io $ getModulesIn "project"
     GlobalModules r -> r <~ do
       io $ getModulesIn "global"
+    InternalModules r -> r <~ do
+      return (ModuleList allowedInternals)
 
     GetModule mname r -> r <~ do
       t <- io $ loadModule mname
@@ -178,10 +180,6 @@ verify modules source =
             LanguagePragma s _ -> s
             OptionsPragma s _ _ -> s
             AnnModulePragma s _ -> s
-
-okmodule (importModule -> ModuleName x) =
-   isPrefixOf "Language.Fay." x ||
-   elem x ["SharedTypes"]
 
 oklanguages :: [Name]
 oklanguages =

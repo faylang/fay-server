@@ -22,6 +22,7 @@ data Command
   | GetModule String (Returns ModuleLoad)
   | LibraryModules (Returns ModuleList)
   | GlobalModules (Returns ModuleList)
+  | InternalModules (Returns ModuleList)
   | ProjectModules (Returns ModuleList)
   | CompileModule String (Returns CompileResult)
   deriving (Read,Data,Typeable,Show)

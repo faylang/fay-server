@@ -29,6 +29,7 @@ main = do
     mirror <- makeMirror
     loadModules mirror LibraryModules
     loadModules mirror ProjectModules
+    loadModules mirror InternalModules
 
 makeMirror = do
   bodyj <- select "#editor"
@@ -45,7 +46,8 @@ loadModules mirror typ =
     navitor <- select "#navitor"
     pm <- select (case typ Returns of
                    ProjectModules _ -> "#project-modules"
-                   LibraryModules _ -> "#library-modules")
+                   LibraryModules _ -> "#library-modules"
+                   InternalModules _ -> "#internal-modules")
     forM_ (reverse (zip [0..] modules)) $ \(i,m) -> do
       li <- select "<li></li>"
       a <- select "<a href='#'></a>" & setText m & appendTo li
