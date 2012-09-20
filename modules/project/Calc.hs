@@ -10,7 +10,7 @@ import Language.Fay.Prelude
 main :: Fay ()
 main = do
   display <- select "<input type='text' value='' style='text-align:right'>"
-  operation <- newRef Nothing :: Fay (Ref (Maybe (Double -> Double)))
+  operation <- newRef Nothing
   appendMore <- newRef False
 
   let buttons =
