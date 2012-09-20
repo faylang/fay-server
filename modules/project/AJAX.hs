@@ -1,7 +1,8 @@
 -- | An example of how AJAX can be done in Fay. This module actually
 --   imports the real SharedTypes and Client.API modules used to run
 --   this IDE. So any requests you make are actual real requests to
---   the server.
+--   the server. You can inspect their source in the “Internal
+--   modules” section on this page.
 
 module AJAX where
 
