@@ -1,5 +1,9 @@
-{-# LANGUAGE EmptyDataDecls    #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+-- Simple wrapping of a few Three functions.
+--
+-- See Jason Hickner's library for the latest version of Three:
+-- https://github.com/jhickner/fay-three
+
+{-# LANGUAGE EmptyDataDecls #-}
 
 module Language.Fay.Three where
 

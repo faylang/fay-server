@@ -1,3 +1,8 @@
+-- | An example of the Three library for 3D rendering. A simple rotating cube.
+--
+-- See Jason Hickner's library for the latest version of Three:
+-- https://github.com/jhickner/fay-three
+
 module Three where
 
 import Language.Fay.FFI
@@ -16,7 +21,7 @@ main = do
     mesh <- mkMesh geo mat
     setZ cam 1000
     addObject3D scene mesh
-    setRendererSize r 640 480
+    setRendererSize r 480 480
     addRenderer r
     animate r scene cam mesh
 
@@ -31,9 +36,3 @@ animate r scene cam mesh = f
 
 addRenderer :: Renderer -> Fay ()
 addRenderer = ffi "document.body.appendChild(%1.domElement)"
-
-log :: Foreign a => a -> Fay ()
-log = ffi "console.log(%1)"
-
-logS :: String -> Fay ()
-logS = ffi "console.log(%1)"
