@@ -1,6 +1,6 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Timers where
+module Demo.Timers where
 
 import Language.Fay.DOM
 import Language.Fay.Prelude

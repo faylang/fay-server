@@ -1,6 +1,6 @@
 -- | Mutable references. Basically IORef implemented in JS.
 
-module Ref where
+module Demo.Ref where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

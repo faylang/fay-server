@@ -3,7 +3,7 @@
 -- See Jason Hickner's library for the latest version of Three:
 -- https://github.com/jhickner/fay-three
 
-module Three where
+module Demo.Three where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

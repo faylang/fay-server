@@ -2,7 +2,7 @@
 
 {-# LANGUAGE EmptyDataDecls    #-}
 
-module DOM where
+module Demo.DOM where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

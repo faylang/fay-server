@@ -2,7 +2,7 @@
 
 {-# LANGUAGE EmptyDataDecls    #-}
 
-module Properties where
+module Demo.Properties where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

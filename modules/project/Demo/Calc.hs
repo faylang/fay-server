@@ -2,7 +2,7 @@
 
 {-# LANGUAGE EmptyDataDecls #-}
 
-module Calc where
+module Demo.Calc where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

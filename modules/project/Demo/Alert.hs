@@ -1,6 +1,6 @@
 -- | A trivial Hello, World! example.
 
-module Alert where
+module Demo.Alert where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

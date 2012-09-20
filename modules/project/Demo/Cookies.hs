@@ -1,6 +1,6 @@
 -- | Reading cookies.
 
-module Cookies where
+module Demo.Cookies where
 
 import Language.Fay.JQuery
 import Language.Fay.JQuery.Cookie

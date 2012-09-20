@@ -1,6 +1,6 @@
 -- | JSON serializing stuff.
 
-module Serialize where
+module Demo.Serialize where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

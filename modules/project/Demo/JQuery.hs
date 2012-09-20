@@ -1,6 +1,6 @@
 -- | A trivial example of using JQuery.
 
-module JQuery where
+module Demo.JQuery where
 
 import Language.Fay.Date
 import Language.Fay.FFI

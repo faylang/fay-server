@@ -3,7 +3,7 @@
 --
 -- More future work for TCO to be done here.
 
-module Tailrecursive where
+module Demo.Tailrecursive where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

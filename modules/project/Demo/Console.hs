@@ -1,6 +1,6 @@
 -- | Another trivial example, using console.
 
-module Console where
+module Demo.Console where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

@@ -1,7 +1,7 @@
 -- | Example of using `show' which is based on JSON.stringify. Don't
 -- rely on this kind of serialization.
 
-module Data where
+module Demo.Data where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude

@@ -3,7 +3,7 @@
 
 {-# LANGUAGE EmptyDataDecls    #-}
 
-module Canvas where
+module Demo.Canvas where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude
