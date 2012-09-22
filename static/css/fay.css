@@ -5,6 +5,16 @@ pre,code {
   font-family: ubuntu mono;
 }
 
+/* Branding */
+.brand {
+  background: url(/css/logo.png) no-repeat 20px 25px;
+  padding-left: 70px;
+  height: 80px;
+  line-height: 50px;
+  text-indent: -9999px;
+  width: 100px;
+}
+
 /* Compile messages */
 #messages .alert {
   white-space: pre;
