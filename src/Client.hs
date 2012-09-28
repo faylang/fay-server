@@ -27,16 +27,18 @@ import Language.Fay.FFI
 
 -- | Main entry point.
 main :: Fay ()
-main =
+main = do
+  currentModule <- newRef Nothing :: Fay (Ref (Maybe String))
   ready $ void $ do
     mirror <- makeMirror
-    loadModules mirror LibraryModules
-    loadModules mirror ProjectModules
-    loadModules mirror InternalModules
-    loadModules mirror GlobalModules
-    newModule
+    loadModules currentModule mirror LibraryModules
+    loadModules currentModule mirror ProjectModules
+    loadModules currentModule mirror InternalModules
+    loadModules currentModule mirror GlobalModules
+    setInterval 2000 (loadModules currentModule mirror GlobalModules)
+    newModule currentModule mirror
 
-newModule = do
+newModule currentModule mirror = do
 
   input <- select "#new-module-name"
   btn <- select "#new-module-btn"
@@ -56,7 +58,10 @@ newModule = do
               call (CreateModule name) $ \result -> do
                 handleValidateResult result
                 case result of
-                  CleanModule _ -> select "#new-module" & hideModal
+                  CleanModule _ -> do
+                    select "#new-module" & hideModal
+                    clearNav
+                    chooseModule currentModule (GlobalModules Returns) mirror name
                   _ -> return ()
             _ -> return ()
 
@@ -85,40 +90,54 @@ makeMirror = do
   select "#compile-btn" & onClick (do compileModule mirror; return False)
   return mirror
 
-loadModules mirror typ =
+loadModules currentModule mirror typ =
   call typ $ \(ModuleList modules) -> do
     navitor <- select "#navitor"
-    pm <- select (case typ Returns of
-                   ProjectModules _ -> "#project-modules"
-                   LibraryModules _ -> "#library-modules"
-                   InternalModules _ -> "#internal-modules"
-                   GlobalModules _ -> "#global-modules"
-                   _ -> "")
+    pm <- select ("#" ++ idname)
+    select ("." ++ className) & remove
+    cm <- readRef currentModule
     forM_ (reverse (zip [0..] modules)) $ \(i,m) -> do
       li <- select "<li></li>"
-      select "<a href='#'></a>" & setText m & appendTo li
-        & onClick (do findSelector "li" navitor & removeClass "active"
+      a <- select ("<a class='" ++ className ++ "' href='#'></a>") & setText m & appendTo li
+        & onClick (do clearNav
                       addClass "active" li
-                      chooseModule (typ Returns) mirror m
+                      chooseModule currentModule (typ Returns) mirror m
                       return True)
+      when (Just m == cm) $ void $
+        addClass "active" li
       when (i == 0) $
-        case typ Returns of
+        case rtype of
           ProjectModules _ -> void $ addClass "active" li
           _ -> return ()
       after li pm
       return ()
-    case typ Returns of
+    case rtype of
       ProjectModules _ ->
         case modules of
-          (x:_) -> chooseModule (typ Returns) mirror x
+          (x:_) -> chooseModule currentModule (typ Returns) mirror x
           _      -> return ()
       _ -> return ()
 
-chooseModule typ mirror m =
+  where rtype = typ Returns
+        className = idname ++ "-module-to-load"
+        idname = cls
+          where cls = case rtype of
+                        ProjectModules _ -> "project-modules"
+                        LibraryModules _ -> "library-modules"
+                        InternalModules _ -> "internal-modules"
+                        GlobalModules _ -> "global-modules"
+                        _ -> ""
+
+clearNav = do
+  navitor <- select "#navitor"
+  findSelector "li" navitor & removeClass "active"
+
+chooseModule currentModule typ mirror m =
   call (GetModule m) $ \result ->
     case result of
       NoModule name -> warn $ "No such module: " ++ name
       LoadedModule contents -> do
+        writeRef currentModule (Just m)
         let compileSupport = do
               select "#compile-btn" & unhide
               select "#compile-status" & unhide

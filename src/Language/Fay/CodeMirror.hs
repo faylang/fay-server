@@ -32,8 +32,6 @@ setMirrorValue = ffi "%1['setValue'](%2)"
 setMirrorLiveChange :: CodeMirror -> Double -> Double -> Fay () -> Fay ()
 setMirrorLiveChange = ffi "CodeMirrorLiveChange(%1,%2,%3,%4)"
 
-instance Foreign a => Foreign (Maybe a)
-
 -- | A CodeMirror line.
 data CodeLine
 instance Foreign CodeLine

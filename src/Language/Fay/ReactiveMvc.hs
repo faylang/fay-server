@@ -29,7 +29,6 @@ data Model a = Model
 -- | A callback on a model's events.
 data Callback a = Callback Guid EventType (a -> Fay ())
 instance Foreign a => Foreign (Callback a)
-instance Foreign a => Foreign (Maybe a)
 
 -- | An event type a callback can be called for.
 data EventType = Change | Delete
