@@ -27,3 +27,7 @@ setInterval = ffi "window['setInterval'](%2,%1)"
 -- | Clear a timer.
 clearTimeout :: Timer -> Fay ()
 clearTimeout = ffi "window['clearTimeout'](%1)"
+
+-- | Alerts.
+alert :: String -> Fay ()
+alert = ffi "window.alert(%1)"

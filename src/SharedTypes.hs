@@ -26,6 +26,7 @@ data Command
   | ProjectModules (Returns ModuleList)
   | CompileModule String (Returns CompileResult)
   | CleanModuleName String (Returns ModuleNameCheck)
+  | CreateModule String (Returns ModuleNameCheck)
   deriving (Read,Data,Typeable,Show)
 instance Foreign Command
 

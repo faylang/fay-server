@@ -4,6 +4,7 @@
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS -fno-warn-unused-do-bind -fno-warn-type-defaults -fno-warn-missing-signatures #-}
+{-# OPTIONS -fno-warn-name-shadowing #-}
 
 -- | The client.
 
@@ -35,34 +36,43 @@ main =
     newModule
 
 newModule = do
+
+  input <- select "#new-module-name"
+  btn <- select "#new-module-btn"
+  validateMsg <- select "#module-validate"
+
+  let update = do
+        val <- getVal input
+        unless (val == "") $
+          call (CleanModuleName val) $ \result -> do
+            handleValidateResult result
+
+      make = true $ do
+        val <- select "#new-module-name" & getVal
+        call (CleanModuleName val) $ \result -> do
+          case result of
+            CleanModule name -> do select "#new-module" & hideModal
+                                   call (CreateModule name) $ \result -> do
+                                     handleValidateResult result
+                                     case result of
+                                       CleanModule _ -> alert "OK, created!"
+                                       _ -> return ()
+            _ -> return ()
+
+      handleValidateResult result =
+        case result of
+          CleanModule name -> do
+            setVal name input
+            removeAttr "disabled" btn
+            hide validateMsg
+            return ()
+          InvalidModule err -> do
+            setAttr "disabled" "disabled" btn
+            setText err validateMsg & unhide
+            return ()
+
   select "#new-module-name" & onLiveChange 100 update
   select "#new-module-btn" & onClick make
-
-  where update = do input <- select "#new-module-name"
-                    val <- getVal input
-                    btn <- select "#new-module-btn"
-                    validateMsg <- select "#module-validate"
-                    unless (val == "") $
-                      call (CleanModuleName val) $ \result -> do
-                        case result of
-                          CleanModule name -> do setVal name input
-                                                 removeAttr "disabled" btn
-                                                 hide validateMsg
-                                                 return ()
-                          InvalidModule err -> do setAttr "disabled" "disabled" btn
-                                                  setText err validateMsg & unhide
-                                                  return ()
-
-        make = true $ do
-          val <- select "#new-module-name" & getVal
-          call (CleanModuleName val) $ \result -> do
-            case result of
-              CleanModule name -> do select "#new-module" & hideModal
-                                     alert name
-              _ -> return ()
-
-alert :: String -> Fay ()
-alert = ffi "window.alert(%1)"
 
 makeMirror = do
   bodyj <- select "#editor"
@@ -81,10 +91,11 @@ loadModules mirror typ =
                    ProjectModules _ -> "#project-modules"
                    LibraryModules _ -> "#library-modules"
                    InternalModules _ -> "#internal-modules"
-                   GlobalModules _ -> "#global-modules")
+                   GlobalModules _ -> "#global-modules"
+                   _ -> "")
     forM_ (reverse (zip [0..] modules)) $ \(i,m) -> do
       li <- select "<li></li>"
-      a <- select "<a href='#'></a>" & setText m & appendTo li
+      select "<a href='#'></a>" & setText m & appendTo li
         & onClick (do findSelector "li" navitor & removeClass "active"
                       addClass "active" li
                       chooseModule (typ Returns) mirror m
@@ -98,7 +109,7 @@ loadModules mirror typ =
     case typ Returns of
       ProjectModules _ ->
         case modules of
-          (x:xs) -> chooseModule (typ Returns) mirror x
+          (x:_) -> chooseModule (typ Returns) mirror x
           _      -> return ()
       _ -> return ()
 

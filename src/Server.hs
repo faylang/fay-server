@@ -2,6 +2,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS -fno-warn-name-shadowing #-}
 
 -- | The server.
 
@@ -85,11 +86,17 @@ dispatcher cmd =
 
     CleanModuleName name r -> r <~ do
       let normalizedName = normalizeModule name
-      case parseModule ("module " ++ normalizedName ++ " where") of
-        ParseOk ok -> return (CleanModule normalizedName)
-        ParseFailed _ err -> return (InvalidModule err)
+      validateModule normalizedName
 
-  where config imports = def
+    CreateModule name r -> r <~ do
+      r <- validateModule name
+      case r of
+        CleanModule name -> do
+          io $ writeFile ("modules/global/" ++ moduleToFile name) (moduleTemplate name)
+        _ -> return ()
+      return r
+
+  where config _ = def
           { configTypecheck = False
           , configDirectoryIncludes = ["modules/library"
                                       ,"modules/project"
@@ -97,6 +104,26 @@ dispatcher cmd =
                                       ,"src"]
           , configPrettyPrint = False
           }
+
+moduleTemplate :: [Char] -> String
+moduleTemplate name = unlines
+  ["module " ++ name ++ " where"
+  ,""
+  ,"import Language.Fay.Prelude"
+  ,"import Language.Fay.FFI"
+  ,"import Language.Fay.DOM"
+  ,"import Language.Fay.JQuery"
+  ]
+
+validateModule :: String -> Snap ModuleNameCheck
+validateModule normalizedName =
+   case parseModule ("module " ++ normalizedName ++ " where") of
+     ParseOk{} -> do
+       t <- io $ loadModule normalizedName
+       return $ case t of
+         Nothing -> CleanModule normalizedName
+         Just{} -> InvalidModule "Already in use: sorry! Try `YourName.Something'"
+     ParseFailed _ err -> return (InvalidModule err)
 
 -- | Normalize a module name, to help newbies.
 normalizeModule :: String -> String
@@ -121,7 +148,7 @@ showFayError e =
     UnsupportedRhs rhs -> "unsupported right-hand side syntax: " ++ prettyPrint rhs
     UnsupportedGuardedAlts ga -> "unsupported guarded alts: " ++ prettyPrint ga
     EmptyDoBlock -> "empty `do' block"
-    UnsupportedModuleSyntax m -> "unsupported module syntax (may be supported later)"
+    UnsupportedModuleSyntax{} -> "unsupported module syntax (may be supported later)"
     LetUnsupported -> "let not supported here"
     InvalidDoBlock -> "invalid `do' block"
     RecursiveDoUnsupported -> "recursive `do' isn't supported"
@@ -132,6 +159,7 @@ showFayError e =
     FfiFormatInvalidJavaScript code err -> "invalid JavaScript code in FFI format string:\n"
                                            ++ err ++ "\nin " ++ code
 
+stripTabs :: [Char] -> [Char]
 stripTabs ('\t':cs) = "    " ++ stripTabs cs
 stripTabs (c:cs) = c : stripTabs cs
 stripTabs [] = []
@@ -145,14 +173,14 @@ sanitize modules x m = do
 getModuleName :: String -> String
 getModuleName source =
   case parseModule source of
-    ParseFailed SrcLoc{srcLine} err -> "Main"
+    ParseFailed{} -> "Main"
     ParseOk (Module _ (ModuleName name) _ _ _ _ _) ->
       name
 
 getImports :: String -> [ImportDecl]
 getImports source =
   case parseModule source of
-    ParseFailed SrcLoc{srcLine} err -> []
+    ParseFailed{} -> []
     ParseOk (Module _ _ _ _ _ imports _) -> imports
 
 verify :: [ModuleName] -> String -> Maybe Msg
@@ -210,7 +238,9 @@ getAllModules = do
   ModuleList g <- getModulesIn "global"
   return (map ModuleName (l ++ p ++ g ++ allowedInternals))
 
+allowedInternals :: [String]
 allowedInternals = ["SharedTypes","Client.API"]
+allowedInternalDirs :: [FilePath]
 allowedInternalDirs = ["src"]
 
 getModulesIn :: FilePath -> IO ModuleList
