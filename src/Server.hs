@@ -8,28 +8,30 @@
 
 module Server where
 
-import Server.API
-import SharedTypes
+import           Server.API
+import           SharedTypes
 
-import Control.Concurrent
-import Control.Monad.IO
-import Control.Monad
-import Data.Char
-import Data.Default
-import Data.List
-import Data.List.Split
-import Data.Maybe
-import Data.UUID (UUID)
-import Data.UUID.V1
-import Language.Fay.Compiler
-import Language.Fay.Types
-import Language.Haskell.Exts
-import Safe
-import Snap.Core
-import Snap.Http.Server
-import System.Directory
-import System.FilePath
-import System.Process.Extra
+import           Control.Concurrent
+import           Control.Monad
+import           Control.Monad.IO
+import           Data.Char
+import           Data.Default
+import           Data.List
+import           Data.List.Split
+import           Data.Maybe
+import           Data.UUID (UUID)
+import           Data.UUID.V1
+import           Language.Fay.Compiler
+import           Language.Fay.Types
+import           Language.Haskell.Exts
+import           Safe
+import           Snap.Core
+import           Snap.Http.Server
+import           System.Directory
+import           System.FilePath
+import qualified System.IO.Strict as S
+
+import           System.Process.Extra
 
 -- | Main entry point.
 server :: IO ()
@@ -54,7 +56,7 @@ dispatcher cmd =
       t <- io $ loadModule mname
       return $ case t of
         Nothing -> NoModule mname
-        Just x -> LoadedModule x
+        Just (_,x) -> LoadedModule x
 
     CheckModule (stripTabs -> contents) r -> r <~ do
       modules <- io $ getAllModules
@@ -72,11 +74,19 @@ dispatcher cmd =
             Left orig@(parseMsgs skiplines -> msgs) -> CheckError msgs orig
 
     CompileModule (stripTabs -> contents) r -> r <~ do
-      (guid,fpath) <- io $ getTempFile ".hs"
+      let moduleName = getModuleName contents
+      maybeModule <- io $ loadModule moduleName
+      (guid,tmpPath) <- io $ getTempFile ".hs"
+      let returnTmp = do io $ deleteSoon tmpPath
+                         return tmpPath
+      fpath <- case maybeModule of
+        Just (path,_) -> if isInfixOf "global" (takeDirectory path)
+                            then return path
+                            else returnTmp
+        Nothing -> returnTmp
       io $ writeFile fpath contents
       let fout = "static/gen" </> guid ++ ".js"
       result <- io $ compileFromToReturningStatus (config (getImports contents)) fpath fout
-      io $ deleteSoon fpath
       io $ deleteSoon fout
       case result of
         Right _ -> do
@@ -272,7 +282,7 @@ getDirectoryItemsRecursive dr = do
   return (map (dr </>) files ++ concat subdirs)
 
 -- | Load a module from a module name.
-loadModule :: String -> IO (Maybe String)
+loadModule :: String -> IO (Maybe (String,String))
 loadModule mname = do
   dirs <- getModuleDirs
   tries <- mapM try (map (</> moduleToFile mname) dirs)
@@ -282,7 +292,7 @@ loadModule mname = do
         try fpath = do
           exists <- doesFileExist fpath
           if exists
-             then fmap Just (readFile fpath)
+             then fmap (\x -> Just (fpath,x)) (S.readFile fpath)
              else return Nothing
 
 fileToModule :: [Char] -> [Char]

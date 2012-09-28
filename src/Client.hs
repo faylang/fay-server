@@ -142,12 +142,16 @@ chooseModule currentModule typ mirror m =
               select "#compile-btn" & unhide
               select "#compile-status" & unhide
               setReadOnly mirror False
+        compileBtn <- select "#compile-btn"
+        setText "Load" compileBtn
         case typ of
           ProjectModules _ -> compileSupport
-          GlobalModules _ -> compileSupport
+          GlobalModules _ -> do
+            setText "Save" compileBtn
+            compileSupport
           _ -> do
             select "#compile-btn" & hide
-            select "#compile-status" & hide
+            select "#save-btn" & hide
             setReadOnly mirror True
         setMirrorValue mirror contents
 

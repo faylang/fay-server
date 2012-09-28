@@ -31,7 +31,8 @@ library
                      filepath,
                      directory,
                      data-default,
-                     haskell-src-exts
+                     haskell-src-exts,
+                     strict
 
 executable fay-server
   ghc-options:       -Wall -O2
@@ -52,4 +53,5 @@ executable fay-server
                      filepath,
                      directory,
                      data-default,
-                     haskell-src-exts
+                     haskell-src-exts,
+                     strict
