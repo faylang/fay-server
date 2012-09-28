@@ -508,3 +508,6 @@ onClick = ffi "%2['click'](%1)"
 
 click :: JQuery -> Fay JQuery
 click = ffi "%1['click']()"
+
+onLiveChange :: Double -> Fay () -> JQuery -> Fay JQuery
+onLiveChange = ffi "%3['livechange'](%1,%2)"

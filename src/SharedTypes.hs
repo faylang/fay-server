@@ -25,6 +25,7 @@ data Command
   | InternalModules (Returns ModuleList)
   | ProjectModules (Returns ModuleList)
   | CompileModule String (Returns CompileResult)
+  | CleanModuleName String (Returns ModuleNameCheck)
   deriving (Read,Data,Typeable,Show)
 instance Foreign Command
 
@@ -35,6 +36,14 @@ data CheckResult
   deriving (Read,Data,Typeable,Show)
 instance Foreign CheckResult
 instance Record CheckResult
+
+-- | A check result.
+data ModuleNameCheck
+  = CleanModule String
+  | InvalidModule String
+  deriving (Read,Data,Typeable,Show)
+instance Foreign ModuleNameCheck
+instance Record ModuleNameCheck
 
 -- | A check result.
 data ModuleLoad

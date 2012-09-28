@@ -18,18 +18,51 @@ import Language.Fay.Ref
 import Language.Fay.Date
 import Language.Fay.Prelude
 import Language.Fay.ReactiveMvc
+import Language.Fay.FFI
 
 --------------------------------------------------------------------------------
 -- Main.
 
 -- | Main entry point.
 main :: Fay ()
-main = do
-  ready $ do
+main =
+  ready $ void $ do
     mirror <- makeMirror
     loadModules mirror LibraryModules
     loadModules mirror ProjectModules
     loadModules mirror InternalModules
+    loadModules mirror GlobalModules
+    newModule
+
+newModule = do
+  select "#new-module-name" & onLiveChange 100 update
+  select "#new-module-btn" & onClick make
+
+  where update = do input <- select "#new-module-name"
+                    val <- getVal input
+                    btn <- select "#new-module-btn"
+                    validateMsg <- select "#module-validate"
+                    unless (val == "") $
+                      call (CleanModuleName val) $ \result -> do
+                        case result of
+                          CleanModule name -> do setVal name input
+                                                 removeAttr "disabled" btn
+                                                 hide validateMsg
+                                                 return ()
+                          InvalidModule err -> do setAttr "disabled" "disabled" btn
+                                                  setText err validateMsg & unhide
+                                                  return ()
+
+        make = true $ do
+          val <- select "#new-module-name" & getVal
+          call (CleanModuleName val) $ \result -> do
+            case result of
+              CleanModule name -> do select "#new-module" & hideModal
+                                     alert name
+              _ -> return ()
+
+alert :: String -> Fay ()
+alert = ffi "window.alert(%1)"
 
 makeMirror = do
   bodyj <- select "#editor"
@@ -47,7 +80,8 @@ loadModules mirror typ =
     pm <- select (case typ Returns of
                    ProjectModules _ -> "#project-modules"
                    LibraryModules _ -> "#library-modules"
-                   InternalModules _ -> "#internal-modules")
+                   InternalModules _ -> "#internal-modules"
+                   GlobalModules _ -> "#global-modules")
     forM_ (reverse (zip [0..] modules)) $ \(i,m) -> do
       li <- select "<li></li>"
       a <- select "<a href='#'></a>" & setText m & appendTo li
@@ -73,11 +107,13 @@ chooseModule typ mirror m =
     case result of
       NoModule name -> warn $ "No such module: " ++ name
       LoadedModule contents -> do
+        let compileSupport = do
+              select "#compile-btn" & unhide
+              select "#compile-status" & unhide
+              setReadOnly mirror False
         case typ of
-          ProjectModules _ -> do
-            select "#compile-btn" & unhide
-            select "#compile-status" & unhide
-            setReadOnly mirror False
+          ProjectModules _ -> compileSupport
+          GlobalModules _ -> compileSupport
           _ -> do
             select "#compile-btn" & hide
             select "#compile-status" & hide
@@ -158,3 +194,13 @@ warn = log
 
 all p (x:xs) = if p x then all p xs else False
 all _ [] = True
+
+true :: Fay a -> Fay Bool
+true m = m >> return True
+
+unless :: Bool -> Fay () -> Fay ()
+unless False m = m
+unless _ _ = return ()
+
+hideModal :: JQuery -> Fay ()
+hideModal = ffi "%1['modal']('hide')"

@@ -9,6 +9,22 @@
     <link href="css/fay.css" rel="stylesheet">
   </head>
   <body>
+    <div class="modal" id="new-module" tabindex="-1" role="dialog" aria-labelledby="new-module" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">New Module</h3>
+      </div>
+      <div class="modal-body">
+        <form>
+          <label>Name: <input id="new-module-name" type="text" class="span2"></label>
+          <div class="alert" id="module-validate" style="display:none;"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <button class="btn btn-primary" id="new-module-btn">Create</button>
+      </div>
+    </div>
     <div class="navbar navbar-inverse">
       <div class="navbar-inner">
         <a class="brand" href="/">Fay: Try it out</a>
@@ -26,6 +42,10 @@
           <div class="row-fluid">
             <div class="span2" id="navitor">
               <ul class="nav nav-list">
+                <li class="nav-header" id="global-modules">
+                  Global Modules
+                </li>
+                <li><a data-toggle="modal" href="#new-module">New...</a></li>
                 <li class="nav-header" id="project-modules">Demo Modules</li>
                 <li class="nav-header" id="library-modules">Library Modules</li>
                 <li class="nav-header" id="internal-modules">Internal Modules</li>

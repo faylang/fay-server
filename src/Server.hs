@@ -83,6 +83,12 @@ dispatcher cmd =
           return (CompileOk guid)
         Left out -> return (CompileError (showFayError out))
 
+    CleanModuleName name r -> r <~ do
+      let normalizedName = normalizeModule name
+      case parseModule ("module " ++ normalizedName ++ " where") of
+        ParseOk ok -> return (CleanModule normalizedName)
+        ParseFailed _ err -> return (InvalidModule err)
+
   where config imports = def
           { configTypecheck = False
           , configDirectoryIncludes = ["modules/library"
@@ -91,6 +97,13 @@ dispatcher cmd =
                                       ,"src"]
           , configPrettyPrint = False
           }
+
+-- | Normalize a module name, to help newbies.
+normalizeModule :: String -> String
+normalizeModule = intercalate "." . map upperize . splitWhen (=='.')
+  where upperize (c:cs) = toUpper c : cs
+        upperize [] = []
+
 
 showFayError :: CompileError -> String
 showFayError e =
