@@ -16,6 +16,7 @@ import SharedTypes
 import Language.Fay.CodeMirror
 import Language.Fay.JQuery
 import Language.Fay.Ref
+import Language.Fay.DOM
 import Language.Fay.Date
 import Language.Fay.Prelude
 import Language.Fay.ReactiveMvc
@@ -51,12 +52,12 @@ newModule = do
         val <- select "#new-module-name" & getVal
         call (CleanModuleName val) $ \result -> do
           case result of
-            CleanModule name -> do select "#new-module" & hideModal
-                                   call (CreateModule name) $ \result -> do
-                                     handleValidateResult result
-                                     case result of
-                                       CleanModule _ -> alert "OK, created!"
-                                       _ -> return ()
+            CleanModule name ->
+              call (CreateModule name) $ \result -> do
+                handleValidateResult result
+                case result of
+                  CleanModule _ -> select "#new-module" & hideModal
+                  _ -> return ()
             _ -> return ()
 
       handleValidateResult result =

@@ -92,7 +92,9 @@ dispatcher cmd =
       r <- validateModule name
       case r of
         CleanModule name -> do
-          io $ writeFile ("modules/global/" ++ moduleToFile name) (moduleTemplate name)
+          let fp = "modules/global/" ++ moduleToFile name
+          io $ createDirectoryIfMissing True (takeDirectory fp)
+          io $ writeFile fp (moduleTemplate name)
         _ -> return ()
       return r
 
@@ -119,10 +121,13 @@ validateModule :: String -> Snap ModuleNameCheck
 validateModule normalizedName =
    case parseModule ("module " ++ normalizedName ++ " where") of
      ParseOk{} -> do
-       t <- io $ loadModule normalizedName
-       return $ case t of
-         Nothing -> CleanModule normalizedName
-         Just{} -> InvalidModule "Already in use: sorry! Try `YourName.Something'"
+       if not (any (=='.') normalizedName)
+          then return (InvalidModule "Please use `Yourname.Whatever'")
+          else do
+            t <- io $ loadModule normalizedName
+            return $ case t of
+              Nothing -> CleanModule normalizedName
+              Just{} -> InvalidModule "Already in use: sorry! Try `YourName.Something'"
      ParseFailed _ err -> return (InvalidModule err)
 
 -- | Normalize a module name, to help newbies.
