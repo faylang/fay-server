@@ -506,6 +506,9 @@ onKeycode callback el = do
 onClick :: Fay Bool -> JQuery -> Fay JQuery
 onClick = ffi "%2['click'](%1)"
 
+onSubmit :: Fay Bool -> JQuery -> Fay JQuery
+onSubmit = ffi "%2['submit'](%1)"
+
 click :: JQuery -> Fay JQuery
 click = ffi "%1['click']()"
 

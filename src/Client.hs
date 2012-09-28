@@ -79,6 +79,7 @@ newModule currentModule mirror = do
 
   select "#new-module-name" & onLiveChange 100 update
   select "#new-module-btn" & onClick make
+  select "#new-module form" & onSubmit (do make; return False)
 
 makeMirror = do
   bodyj <- select "#editor"
