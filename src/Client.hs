@@ -69,7 +69,7 @@ newModule currentModule mirror = do
         case result of
           CleanModule name -> do
             namenow <- getVal input
-            unless (length namenow > length name) $ void $
+            unless (length namenow /= length name) $ void $
               setVal name input
             removeAttr "disabled" btn
             hide validateMsg
