@@ -17,7 +17,7 @@ library
   hs-source-dirs:    src
   exposed-modules:   Client
   build-depends:     base > 4 && < 5,
-                     fay,
+                     fay == 0.9.1.1,
                      snap-server,
                      snap-core,
                      utf8-string,
@@ -39,7 +39,7 @@ executable fay-server
   main-is:           Main.hs
   hs-source-dirs:    src
   build-depends:     base ==4.5.*,
-                     fay,
+                     fay == 0.9.1.1,
                      snap-server,
                      snap-core,
                      utf8-string,
