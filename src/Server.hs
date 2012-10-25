@@ -174,6 +174,8 @@ showFayError e =
     FfiFormatInvalidJavaScript code err -> "invalid JavaScript code in FFI format string:\n"
                                            ++ err ++ "\nin " ++ code
 
+    UnsupportedFieldPattern e -> "unsupported field pattern: " ++ show e
+
 stripTabs :: [Char] -> [Char]
 stripTabs ('\t':cs) = "    " ++ stripTabs cs
 stripTabs (c:cs) = c : stripTabs cs

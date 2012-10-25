@@ -89,5 +89,3 @@ instance Record ModuleList
 -- | A record type.
 class Record a
 
--- | Foreign instance for Maybe.
-instance Foreign a => Foreign (Maybe a)
