@@ -21,8 +21,7 @@ import           Data.List.Split
 import           Data.Maybe
 import           Data.UUID (UUID)
 import           Data.UUID.V1
-import           Language.Fay.Compiler
-import           Language.Fay.Types
+import           Language.Fay
 import           Language.Haskell.Exts
 import           Safe
 import           Snap.Core
@@ -86,13 +85,13 @@ dispatcher cmd =
         Nothing -> returnTmp
       io $ writeFile fpath contents
       let fout = "static/gen" </> guid ++ ".js"
-      result <- io $ compileFromToReturningStatus (config (getImports contents)) fpath fout
+      result <- io $ compileFromToAndGenerateHtml (config (getImports contents)) fpath fout
       io $ deleteSoon fout
       case result of
         Right _ -> do
           io $ generateFile (getModuleName contents) guid
           return (CompileOk guid)
-        Left out -> return (CompileError (showFayError out))
+        Left out -> return (CompileError (showCompileError out))
 
     CleanModuleName name r -> r <~ do
       let normalizedName = normalizeModule name
@@ -145,36 +144,6 @@ normalizeModule :: String -> String
 normalizeModule = intercalate "." . map upperize . splitWhen (=='.')
   where upperize (c:cs) = toUpper c : cs
         upperize [] = []
-
-
-showFayError :: CompileError -> String
-showFayError e =
-  case e of
-    ParseError _ e -> e
-    UnsupportedDeclaration d -> "unsupported declaration: " ++ prettyPrint d
-    UnsupportedExportSpec es -> "unsupported export specification: " ++ prettyPrint es
-    UnsupportedMatchSyntax m -> "unsupported match/binding syntax: " ++ prettyPrint m
-    UnsupportedWhereInMatch m -> "unsupported `where' syntax: " ++ prettyPrint m
-    UnsupportedExpression e -> "unsupported expression syntax: " ++ prettyPrint e
-    UnsupportedLiteral lit -> "unsupported literal syntax: " ++ prettyPrint lit
-    UnsupportedLetBinding d -> "unsupported let binding: " ++ prettyPrint d
-    UnsupportedOperator qop -> "unsupported operator syntax: " ++ prettyPrint qop
-    UnsupportedPattern pat -> "unsupported pattern syntax: " ++ prettyPrint pat
-    UnsupportedRhs rhs -> "unsupported right-hand side syntax: " ++ prettyPrint rhs
-    UnsupportedGuardedAlts ga -> "unsupported guarded alts: " ++ prettyPrint ga
-    EmptyDoBlock -> "empty `do' block"
-    UnsupportedModuleSyntax{} -> "unsupported module syntax (may be supported later)"
-    LetUnsupported -> "let not supported here"
-    InvalidDoBlock -> "invalid `do' block"
-    RecursiveDoUnsupported -> "recursive `do' isn't supported"
-    FfiNeedsTypeSig d -> "your FFI declaration needs a type signature: " ++ prettyPrint d
-    FfiFormatBadChars cs -> "invalid characters for FFI format string: " ++ show cs
-    FfiFormatNoSuchArg i -> "no such argument in FFI format string: " ++ show i
-    FfiFormatIncompleteArg -> "incomplete `%' syntax in FFI format string"
-    FfiFormatInvalidJavaScript code err -> "invalid JavaScript code in FFI format string:\n"
-                                           ++ err ++ "\nin " ++ code
-
-    UnsupportedFieldPattern e -> "unsupported field pattern: " ++ show e
 
 stripTabs :: [Char] -> [Char]
 stripTabs ('\t':cs) = "    " ++ stripTabs cs

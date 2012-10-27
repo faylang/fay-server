@@ -1,5 +1,5 @@
 cd ../fay
 cabal-dev install --force-reinstalls
-cd ../moogle
+cd ../fay-server
 touch Setup.hs
 cabal-dev install
