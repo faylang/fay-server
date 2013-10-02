@@ -88,4 +88,3 @@ instance Record ModuleList
 
 -- | A record type.
 class Record a
-

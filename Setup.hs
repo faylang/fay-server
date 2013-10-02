@@ -11,8 +11,10 @@ import Distribution.Simple.LocalBuildInfo
 import Distribution.ModuleName (ModuleName,toFilePath)
 
 import Control.Monad
-import Language.Fay.Compiler
-import Language.Fay.Types
+import Fay
+import Fay.Compiler
+import Fay.Compiler.Config
+import Fay.Types
 import System.FilePath
 import System.Directory
 import Data.Default
@@ -46,15 +48,7 @@ buildFay _ _ pkgdesc buildinfo = do
           exists <- doesFileExist candidate
           when exists $ do
             putStrLn $ "Compiling " ++ candidate ++ " to " ++ out ++ " ..."
-            compileFromTo (config dir) candidate out
+            compileFromTo (config dir) candidate (Just out)
 
      where moduleNameToPath md = toFilePath md ++ ".hs"
-           config dir = def
-             { configInlineForce       = False
-             , configFlattenApps       = True
-             , configExportBuiltins    = True
-             , configDirectoryIncludes = [dir]
-             , configPrettyPrint       = False
-             , configTypecheck         = False
-             , configHtmlWrapper       = False
-             }
+           config dir = addConfigDirectoryIncludePaths [dir] def { configTypecheck = False, configPrettyPrint = True }

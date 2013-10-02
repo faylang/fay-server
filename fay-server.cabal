@@ -17,7 +17,7 @@ library
   hs-source-dirs:    src
   exposed-modules:   Client
   build-depends:     base > 4 && < 5,
-                     fay == 0.9.2.0,
+                     fay == 0.18.*,
                      snap-server,
                      snap-core,
                      utf8-string,
@@ -32,14 +32,15 @@ library
                      directory,
                      data-default,
                      haskell-src-exts,
-                     strict
+                     strict,
+                     ghc-paths
 
 executable fay-server
   ghc-options:       -Wall -O2
   main-is:           Main.hs
   hs-source-dirs:    src
   build-depends:     base ==4.5.*,
-                     fay == 0.9.2.0,
+                     fay == 0.18.*,
                      snap-server,
                      snap-core,
                      utf8-string,
@@ -54,4 +55,5 @@ executable fay-server
                      directory,
                      data-default,
                      haskell-src-exts,
-                     strict
+                     strict,
+                     ghc-paths

@@ -18,9 +18,9 @@ import Language.Fay.JQuery
 import Language.Fay.Ref
 import Language.Fay.DOM
 import Language.Fay.Date
-import Language.Fay.Prelude
+import Language.Fay.Prelude hiding (log, all, void, unless)
 import Language.Fay.ReactiveMvc
-import Language.Fay.FFI
+import Fay.FFI
 
 --------------------------------------------------------------------------------
 -- Main.
@@ -206,7 +206,7 @@ checkModule mirror lines_ref = do
            else select "#compile-status" & setText "Invalid" & setAttr "class" "label label-important"
         log $ "Check failed: " ++ orig
         when (all (\(Msg typ _ _) -> typ == MsgWarning) msgs) $
-          removeAttr "disabled" compileBtn
+          void $ removeAttr "disabled" compileBtn
         forM_ msgs $ \(Msg typ line err) -> do
           let classname = if typ == MsgWarning
                              then "compile-warning"

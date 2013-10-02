@@ -9,7 +9,7 @@ module Server.API where
 import           Data.Aeson (encode,decode)
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Lazy.UTF8 as UTF8
-import           Language.Fay.Convert
+import           Fay.Convert
 import           Language.Fay.FFI (Foreign)
 import           SharedTypes
 import           Snap.Core

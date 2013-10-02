@@ -1,7 +1,7 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE ViewPatterns      #-}
 {-# OPTIONS -fno-warn-name-shadowing #-}
 
 -- | The server.
@@ -19,23 +19,25 @@ import           Data.Default
 import           Data.List
 import           Data.List.Split
 import           Data.Maybe
-import           Data.UUID (UUID)
+import           Data.UUID             (UUID)
 import           Data.UUID.V1
-import           Language.Fay
+import           Fay
+import           Fay.Compiler.Config
 import           Language.Haskell.Exts
 import           Safe
 import           Snap.Core
 import           Snap.Http.Server
+import           Snap.Util.FileServe
 import           System.Directory
 import           System.FilePath
-import qualified System.IO.Strict as S
-
+import qualified System.IO.Strict      as S
 import           System.Process.Extra
+import qualified GHC.Paths as GHCPaths
 
 -- | Main entry point.
 server :: IO ()
 server = do
-  httpServe (setPort 10001 defaultConfig) (route [("/json",handle dispatcher)])
+  httpServe (setPort 10001 defaultConfig) (route [("/json",handle dispatcher),("",serveDirectory "static")])
 
 -- | Dispatch on the commands.
 dispatcher :: Command -> Dispatcher
@@ -65,7 +67,7 @@ dispatcher cmd =
         let (skiplines,out) = formatForGhc contents
         io $ writeFile fpath out
         dirs <- io getModuleDirs
-        result <- io $ typecheck dirs [] fpath
+        result <- io $ typecheck config fpath
         io $ removeFile fpath
         return $
           case result of
@@ -85,7 +87,7 @@ dispatcher cmd =
         Nothing -> returnTmp
       io $ writeFile fpath contents
       let fout = "static/gen" </> guid ++ ".js"
-      result <- io $ compileFromToAndGenerateHtml (config (getImports contents)) fpath fout
+      result <- io $ compileFromToAndGenerateHtml config fpath fout
       io $ deleteSoon fout
       case result of
         Right _ -> do
@@ -107,14 +109,10 @@ dispatcher cmd =
         _ -> return ()
       return r
 
-  where config _ = def
-          { configTypecheck = False
-          , configDirectoryIncludes = ["modules/library"
-                                      ,"modules/project"
-                                      ,"modules/global"
-                                      ,"src"]
-          , configPrettyPrint = False
-          }
+config :: CompileConfig
+config = addConfigDirectoryIncludePaths ["modules/library"
+                                        ,"modules/project"
+                                        ,"src"] def { configTypecheck = False, configPrettyPrint = True }
 
 moduleTemplate :: [Char] -> String
 moduleTemplate name = unlines
@@ -210,19 +208,18 @@ verify modules source =
 
 oklanguages :: [Name]
 oklanguages =
-  ["NoImplicitPrelude"
-  ,"GADTs"
-  ,"EmptyDataDecls"
-  ,"IncoherentInstances"
-  ,"FlexibleInstances"
-  ,"RankNTypes"]
+  [Ident "NoImplicitPrelude"
+  ,Ident "GADTs"
+  ,Ident "EmptyDataDecls"
+  ,Ident "IncoherentInstances"
+  ,Ident "FlexibleInstances"
+  ,Ident "RankNTypes"]
 
 getAllModules :: IO [ModuleName]
 getAllModules = do
   ModuleList l <- getModulesIn "library"
   ModuleList p <- getModulesIn "project"
-  ModuleList g <- getModulesIn "global"
-  return (map ModuleName (l ++ p ++ g ++ allowedInternals))
+  return (map ModuleName (l ++ p ++ allowedInternals))
 
 allowedInternals :: [String]
 allowedInternals = ["SharedTypes","Client.API"]
@@ -312,14 +309,27 @@ generateFile mname guid = do
         libs = ["/js/jquery.js","/js/date.js","/js/gen.js","/js/jquery.cookie.js"] ++
                ["/js/three.min.js" | mname == "Demo.Three"]
 
+
 -- | Type-check a file.
-typecheck :: [FilePath] -> [String] -> String -> IO (Either String (String,String))
-typecheck includeDirs ghcFlags fp = do
-  readAllFromProcess' "ghc" (
-    ["-package","fay","-package-conf","cabal-dev/packages-7.4.2.conf"] ++
-    ["-fno-code","-Wall","-Werror",fp] ++
-    ["-iinclude"] ++
-    map ("-i" ++) includeDirs ++ ghcFlags) ""
+typecheck :: CompileConfig -> FilePath -> IO (Either String (String,String))
+typecheck cfg fp = do
+  let faydir = "foo"
+  let includes = configDirectoryIncludes cfg
+
+  -- Remove the fay source dir from includeDirs to prevent errors on FFI instance declarations.
+  let includeDirs = map snd . filter ((/= faydir) . snd) . filter (isNothing . fst) $ includes
+  let packages = nub . map (fromJust . fst) . filter (isJust . fst) $ includes
+
+  let flags =
+          [ "-fno-code"
+          , "-XNoImplicitPrelude"
+          , "-hide-package base"
+          , "-cpp", "-pgmPcpphs", "-optP--cpp", "-DFAY=1"
+          , "-main-is"
+          , "Language.Fay.DummyMain"
+          , "-i" ++ intercalate ":" includeDirs
+          , fp ]
+  readAllFromProcess' GHCPaths.ghc flags ""
 
 -- | Parse the GHC messages.
 parseMsgs :: Int -> String -> [Msg]

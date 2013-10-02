@@ -12,7 +12,7 @@ call :: (Record a,Foreign a) => (Returns a -> Command) -> (a -> Fay ()) -> Fay (
 call f g = ajaxCommand (f Returns) g
 
 -- | Run the AJAX command.
-ajaxCommand :: (Record a,Foreign a) => Command -> (a -> Fay ()) -> Fay ()
+ajaxCommand :: (Record a,Foreign a) => Command -> (Automatic a -> Fay ()) -> Fay ()
 ajaxCommand = ffi "jQuery['ajax']({\
                   \ \"url\": '/json', \
                   \ \"type\": 'POST', \

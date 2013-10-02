@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE EmptyDataDecls #-}
 
-module Language.Fay.DOM  where
+module Language.Fay.DOM where
 
 import Language.Fay.FFI
 import Language.Fay.Prelude
