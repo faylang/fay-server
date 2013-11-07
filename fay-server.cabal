@@ -39,7 +39,7 @@ executable fay-server
   ghc-options:       -Wall -O2
   main-is:           Main.hs
   hs-source-dirs:    src
-  build-depends:     base ==4.5.*,
+  build-depends:     base,
                      fay == 0.18.*,
                      snap-server,
                      snap-core,
